@@ -9,7 +9,6 @@ interface CarState {
   selectedFinish: number | null;
   currentCarId: number | null;
   selectedAlloy: number | null;
-  selectedCarColor: number | null;
   selectedAlloyDesign: number | null;
   selectedAlloyFinish: number | null;
   
@@ -21,7 +20,6 @@ interface CarState {
   setSelectedFinish: (finish: number | null) => void;
   setCurrentCarId: (id: number | null) => void;
   setSelectedAlloy: (alloyId: number | null) => void;
-  setSelectedCarColor: (color: number | null) => void;
   setSelectedAlloyDesign: (designId: number | null) => void;
   setSelectedAlloyFinish: (finishId: number | null) => void;
   resetSelectedAlloyFinish: () => void;
@@ -37,7 +35,6 @@ export const useCarStore = create<CarState>((set) => ({
   selectedFinish: null,
   currentCarId: null,
   selectedAlloy: null,
-  selectedCarColor: null,
   selectedAlloyDesign: null,
   selectedAlloyFinish: null,
   
@@ -49,7 +46,6 @@ export const useCarStore = create<CarState>((set) => ({
   setSelectedFinish: (finish) => set({ selectedFinish: finish }),
   setCurrentCarId: (id) => set({ currentCarId: id }),
   setSelectedAlloy: (alloyId) => set({ selectedAlloy: alloyId }),
-  setSelectedCarColor: (color) => set({ selectedCarColor: color }),
   setSelectedAlloyDesign: (designId) => set({ selectedAlloyDesign: designId, selectedAlloyFinish: null }),
   setSelectedAlloyFinish: (finishId) => set({ selectedAlloyFinish: finishId }),
   resetSelectedAlloyFinish: () => set({ selectedAlloyFinish: null }),

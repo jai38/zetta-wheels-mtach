@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { carService, type Color, type CarColorOption } from "@/lib/api";
-import { useCarStore } from "@/stores/useCarStore";
+import { carService, type Car, type CarColorOption } from "@/lib/api";
 import {
   Select,
   SelectContent,
@@ -10,72 +9,33 @@ import {
 } from "@/components/ui/select";
 
 interface ColorPickerProps {
-  carId: number;
+  car: Car;
+  onColorChange: (colorId: number) => void;
 }
 
-export const ColorPicker = ({ carId }: ColorPickerProps) => {
-  const { selectedCarColor, setSelectedCarColor, setCurrentCarId } = useCarStore();
+export const ColorPicker = ({ car, onColorChange }: ColorPickerProps) => {
   const [colors, setColors] = useState<CarColorOption[]>([]);
   const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+  useEffect(() => {
+    const fetchColors = async () => {
+      if (!car.id) return;
+      try {
+        setLoading(true);
+        const colorsData = await carService.getColorsForCar(car.id);
+        setColors(colorsData);
+      } catch (error) {
+        console.error("Failed to fetch colors:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      const fetchColors = async () => {
-
-        if (!carId) return;
-
-        try {
-
-          const colorsData = await carService.getColorsForCar(carId);
-
-          setColors(colorsData);
-
-          if (!selectedCarColor && colorsData?.length > 0) {
-
-            const initialColorOption = colorsData[0];
-
-            setSelectedCarColor(initialColorOption.color.id);
-
-            if (initialColorOption.carIds.length > 0) {
-
-              setCurrentCarId(initialColorOption.carIds[0]);
-
-            }
-
-          }
-
-        } catch (error) {
-
-          console.error("Failed to fetch colors:", error);
-
-        } finally {
-
-          setLoading(false);
-
-        }
-
-      };
-
-  
-
-      fetchColors();
-
-    }, [carId, selectedCarColor, setSelectedCarColor, setCurrentCarId]);
+    fetchColors();
+  }, [car.id]);
 
   const handleValueChange = (value: string) => {
-    const selectedColorId = parseInt(value);
-    setSelectedCarColor(selectedColorId);
-
-    const selectedOption = colors.find(
-      (option) => option.color.id === selectedColorId,
-    );
-
-    if (selectedOption && selectedOption.carIds.length > 0) {
-      setCurrentCarId(selectedOption.carIds[0]);
-    } else {
-      // Handle case where no carId is found for the selected color
-      setCurrentCarId(null);
-    }
+    onColorChange(parseInt(value));
   };
 
   if (loading) {
@@ -86,9 +46,7 @@ export const ColorPicker = ({ carId }: ColorPickerProps) => {
   }
 
   return (
-    <Select
-      onValueChange={handleValueChange}
-      value={selectedCarColor?.toString()}>
+    <Select onValueChange={handleValueChange} value={car.color?.id.toString()}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select a color" />
       </SelectTrigger>

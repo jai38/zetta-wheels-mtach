@@ -20,7 +20,6 @@ const CarDetail = () => {
     setSelectedAlloy,
     selectedAlloyDesign,
     selectedAlloyFinish,
-    selectedCarColor,
     setCurrentCarId,
     currentCarId,
   } = useCarStore();
@@ -31,7 +30,7 @@ const CarDetail = () => {
 
   const [showImageViewerModal, setShowImageViewerModal] = useState(false); // NEW: State for modal
   const [imageViewerUrl, setImageViewerUrl] = useState<string | null>(null); // NEW: State for modal image
-
+  const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [car, setCar] = useState<Car | null>(null);
   const [allAlloys, setAllAlloys] = useState<Alloy[]>([]);
   const [currentAlloyDetails, setCurrentAlloyDetails] = useState<Alloy | null>(
@@ -40,20 +39,27 @@ const CarDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Set current car ID from URL parameter
+  useEffect(() => {
+    if (id) {
+      const carId = parseInt(id, 10);
+      if (!isNaN(carId)) {
+        setCurrentCarId(carId);
+      }
+    }
+  }, [id, setCurrentCarId]);
+
   // Fetch car data on mount or when currentCarId changes
   useEffect(() => {
     const fetchCarAndAlloys = async () => {
-      const carIdToFetch = currentCarId ?? parseInt(id!); // Use currentCarId if available, else id from URL
-
-      if (!carIdToFetch) {
-        // If no carId to fetch, return
+      if (!currentCarId) {
         setLoading(false);
         return;
       }
       setLoading(true);
       setError(null);
       try {
-        const carData = await carService.getCarById(carIdToFetch); // Use carIdToFetch
+        const carData = await carService.getCarById(currentCarId);
         setCar(carData);
 
         const alloysData = await alloyService.getAlloys({
@@ -69,17 +75,17 @@ const CarDetail = () => {
       }
     };
     fetchCarAndAlloys();
-  }, [id, currentCarId]);
+  }, [currentCarId]);
 
   // Fetch new car when color changes
   useEffect(() => {
     const fetchCarByColor = async () => {
-      if (!selectedCarColor || !car?.variantId) return;
+      if (!selectedColor || !car?.variantId) return;
 
       try {
         const carsData = await carService.getCars({
           variantId: car.variantId,
-          colorId: selectedCarColor,
+          colorId: selectedColor,
           limit: 1,
           isActive: true,
         });
@@ -95,7 +101,7 @@ const CarDetail = () => {
     };
 
     fetchCarByColor();
-  }, [selectedCarColor, car?.variantId, setCurrentCarId]);
+  }, [selectedColor, car?.variantId, setCurrentCarId]);
 
   // set current alloy details based on selections
   useEffect(() => {
@@ -217,7 +223,7 @@ const CarDetail = () => {
   return (
     <>
       <div className="w-full container mx-auto px-4 py-8">
-        <CarHeader carTitle={carTitle} carId={car.id} />
+        <CarHeader carTitle={carTitle} car={car} setSelectedColor={setSelectedColor} />
         <CarDisplay
           car={car}
           isMobile={isMobile}
@@ -244,11 +250,11 @@ const CarDetail = () => {
 export default CarDetail;
 
 // Helper Components
-const CarHeader = ({ carTitle, carId }: { carTitle: string; carId: number }) => (
+const CarHeader = ({ carTitle, car, setSelectedColor }: { carTitle: string; car: Car, setSelectedColor: (color: number) => void; }) => (
   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center m-4 sm:m-8 gap-4">
     <h1 className="text-3xl sm:text-4xl font-bold">{carTitle}</h1>
     <div className="flex flex-col sm:flex-row gap-4">
-      <ColorPicker carId={carId} />
+      <ColorPicker car={car} onColorChange={setSelectedColor} />
     </div>
   </div>
 );
