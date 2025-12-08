@@ -7,7 +7,7 @@ import { InfiniteGrid } from '@/components/InfiniteGrid';
 import { Filters } from '@/components/Filters';
 import { Button } from '@/components/ui/button';
 import { useCarStore } from '@/stores/useCarStore';
-import { getMakes, getModelsByMake, getCars } from '@/lib/mockData';
+import { carService, type Make, type CarModel, type Car } from '@/lib/api';
 
 const Index = () => {
   const {
@@ -20,32 +20,90 @@ const Index = () => {
   } = useCarStore();
 
   const [page, setPage] = useState(1);
-  const [allCars, setAllCars] = useState<any[]>([]);
+  const [allCars, setAllCars] = useState<Car[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [makes, setMakes] = useState<Make[]>([]);
+  const [models, setModels] = useState<CarModel[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const makes = getMakes();
-  const models = selectedMake ? getModelsByMake(selectedMake) : [];
+  // Load makes on mount
+  useEffect(() => {
+    const fetchMakes = async () => {
+      try {
+        const result = await carService.getMakes({ limit: 100, isActive: true });
+        setMakes(result.items);
+      } catch (err) {
+        console.error('Failed to fetch makes:', err);
+        setError('Failed to load car makes');
+      }
+    };
+    fetchMakes();
+  }, []);
+
+  // Load models when make changes
+  useEffect(() => {
+    const fetchModels = async () => {
+      if (!selectedMake) {
+        setModels([]);
+        return;
+      }
+      try {
+        const result = await carService.getModels({ makeId: selectedMake, limit: 100, isActive: true });
+        setModels(result.items);
+      } catch (err) {
+        console.error('Failed to fetch models:', err);
+      }
+    };
+    fetchModels();
+  }, [selectedMake]);
 
   // Load cars based on filters
   useEffect(() => {
-    setIsLoading(true);
-    const result = getCars({
-      makeId: selectedMake || undefined,
-      modelId: selectedModel || undefined,
-      query: searchQuery || undefined,
-      page,
-    });
+    let isActive = true;
 
-    if (page === 1) {
-      setAllCars(result.items);
-    } else {
-      setAllCars((prev) => [...prev, ...result.items]);
-    }
+    const fetchCars = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const result = await carService.getCars({
+          makeId: selectedMake || undefined,
+          modelId: selectedModel || undefined,
+          search: searchQuery || undefined,
+          page,
+          limit: 6,
+          isActive: true,
+        });
 
-    setHasMore(page < result.totalPages);
-    setIsLoading(false);
+        if (isActive) {
+          if (page === 1) {
+            setAllCars(result.cars);
+          } else {
+            setAllCars((prev) => {
+              const existingIds = new Set(prev.map((c) => c.id));
+              const newCars = result.cars.filter((c) => !existingIds.has(c.id));
+              return [...prev, ...newCars];
+            });
+          }
+          setHasMore(page < result.pagination.totalPages);
+        }
+      } catch (err) {
+        if (isActive) {
+          console.error('Failed to fetch cars:', err);
+          setError('Failed to load cars. Please try again.');
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+    fetchCars();
+
+    return () => {
+      isActive = false;
+    };
   }, [selectedMake, selectedModel, searchQuery, page]);
 
   // Reset page when filters change
@@ -60,7 +118,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       {/* Hero Section */}
       <motion.section
         initial={{ opacity: 0 }}
@@ -92,17 +150,22 @@ const Index = () => {
             transition={{ delay: 0.3 }}
             className="space-y-4"
           >
+            {error && (
+              <div className="rounded-lg bg-destructive/10 p-4 text-destructive">
+                {error}
+              </div>
+            )}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <DependentSelect
-                options={makes}
-                value={selectedMake}
-                onChange={setSelectedMake}
+                options={makes.map(m => ({ id: m.id.toString(), name: m.name }))}
+                value={selectedMake?.toString() || null}
+                onChange={(val) => setSelectedMake(val ? parseInt(val) : null)}
                 placeholder="Select Make"
               />
               <DependentSelect
-                options={models}
-                value={selectedModel}
-                onChange={setSelectedModel}
+                options={models.map(m => ({ id: m.id.toString(), name: m.name }))}
+                value={selectedModel?.toString() || null}
+                onChange={(val) => setSelectedModel(val ? parseInt(val) : null)}
                 placeholder="Select Model"
                 disabled={!selectedMake}
               />
@@ -151,7 +214,7 @@ const Index = () => {
 
       {/* Mobile Filters Sheet */}
       <Filters isOpen={filtersOpen} onClose={() => setFiltersOpen(false)} isMobile={true} />
-    </div>
+    </>
   );
 };
 

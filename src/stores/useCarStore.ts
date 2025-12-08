@@ -1,25 +1,30 @@
 import { create } from 'zustand';
 
 interface CarState {
-  selectedMake: string | null;
-  selectedModel: string | null;
+  selectedMake: number | null;
+  selectedModel: number | null;
   searchQuery: string;
-  selectedColor: string | null;
-  selectedAlloySize: string | null;
-  selectedFinish: string | null;
-  currentCarId: string | null;
-  selectedAlloy: string | null;
-  selectedCarColor: string | null;
+  selectedColor: number | null;
+  selectedAlloySize: number | null;
+  selectedFinish: number | null;
+  currentCarId: number | null;
+  selectedAlloy: number | null;
+  selectedCarColor: number | null;
+  selectedAlloyDesign: number | null;
+  selectedAlloyFinish: number | null;
   
-  setSelectedMake: (make: string | null) => void;
-  setSelectedModel: (model: string | null) => void;
+  setSelectedMake: (make: number | null) => void;
+  setSelectedModel: (model: number | null) => void;
   setSearchQuery: (query: string) => void;
-  setSelectedColor: (color: string | null) => void;
-  setSelectedAlloySize: (size: string | null) => void;
-  setSelectedFinish: (finish: string | null) => void;
-  setCurrentCarId: (id: string | null) => void;
-  setSelectedAlloy: (alloyId: string | null) => void;
-  setSelectedCarColor: (color: string | null) => void;
+  setSelectedColor: (color: number | null) => void;
+  setSelectedAlloySize: (size: number | null) => void;
+  setSelectedFinish: (finish: number | null) => void;
+  setCurrentCarId: (id: number | null) => void;
+  setSelectedAlloy: (alloyId: number | null) => void;
+  setSelectedCarColor: (color: number | null) => void;
+  setSelectedAlloyDesign: (designId: number | null) => void;
+  setSelectedAlloyFinish: (finishId: number | null) => void;
+  resetSelectedAlloyFinish: () => void;
   resetFilters: () => void;
 }
 
@@ -33,6 +38,8 @@ export const useCarStore = create<CarState>((set) => ({
   currentCarId: null,
   selectedAlloy: null,
   selectedCarColor: null,
+  selectedAlloyDesign: null,
+  selectedAlloyFinish: null,
   
   setSelectedMake: (make) => set({ selectedMake: make, selectedModel: null }),
   setSelectedModel: (model) => set({ selectedModel: model }),
@@ -43,6 +50,9 @@ export const useCarStore = create<CarState>((set) => ({
   setCurrentCarId: (id) => set({ currentCarId: id }),
   setSelectedAlloy: (alloyId) => set({ selectedAlloy: alloyId }),
   setSelectedCarColor: (color) => set({ selectedCarColor: color }),
+  setSelectedAlloyDesign: (designId) => set({ selectedAlloyDesign: designId, selectedAlloyFinish: null }),
+  setSelectedAlloyFinish: (finishId) => set({ selectedAlloyFinish: finishId }),
+  resetSelectedAlloyFinish: () => set({ selectedAlloyFinish: null }),
   resetFilters: () => set({
     selectedColor: null,
     selectedAlloySize: null,

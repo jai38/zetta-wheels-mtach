@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import type { Car } from '@/lib/mockData';
+import type { Car } from '@/lib/api';
 
 interface CarCardProps {
   car: Car;
@@ -8,6 +8,11 @@ interface CarCardProps {
 
 export const CarCard = ({ car }: CarCardProps) => {
   const navigate = useNavigate();
+
+  // Build car title from variant and model data
+  const carTitle = car.variant?.model?.make
+    ? `${car.variant.model.make.name} ${car.variant.model.name} ${car.variant.name}`
+    : 'Car';
 
   return (
     <motion.div
@@ -19,22 +24,26 @@ export const CarCard = ({ car }: CarCardProps) => {
     >
       <div className="aspect-[4/3] overflow-hidden bg-muted">
         <img
-          src={car.thumbnailPath}
-          alt={car.title}
+          src={car.carImage || 'https://via.placeholder.com/400x300?text=No+Image'}
+          alt={carTitle}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
       </div>
       
       <div className="p-6">
         <h3 className="mb-2 font-serif text-xl text-card-foreground group-hover:text-primary transition-smooth">
-          {car.title}
+          {carTitle}
         </h3>
         
         <div className="flex items-baseline justify-between">
-          <p className="text-2xl font-semibold text-primary">
-            ${car.price.toLocaleString()}
-          </p>
-          <p className="text-sm text-muted-foreground">{car.specs.power}</p>
+          <div>
+            {car.color && (
+              <p className="text-sm text-muted-foreground mb-1">{car.color.name}</p>
+            )}
+            {car.variant?.defaultAlloySize && (
+              <p className="text-sm text-muted-foreground">{car.variant.defaultAlloySize}" wheels</p>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>
