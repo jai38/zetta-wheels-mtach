@@ -12,11 +12,8 @@ interface AlloyFinishSelectorProps {
 export const AlloyFinishSelector = ({
   allAlloys,
 }: AlloyFinishSelectorProps) => {
-  const {
-    selectedAlloyDesign,
-    selectedAlloyFinish,
-    setSelectedAlloyFinish,
-  } = useCarStore();
+  const { selectedAlloyDesign, selectedAlloyFinish, setSelectedAlloyFinish } =
+    useCarStore();
 
   const finishes = useMemo(() => {
     if (!selectedAlloyDesign) return [];
@@ -28,6 +25,7 @@ export const AlloyFinishSelector = ({
           finishMap.set(alloy.finishId, alloy.finish);
         }
       });
+    console.log("Available finishes:", Array.from(finishMap.values()));
     return Array.from(finishMap.values());
   }, [allAlloys, selectedAlloyDesign]);
 
@@ -35,7 +33,10 @@ export const AlloyFinishSelector = ({
     const isValidFinishSelected = finishes.some(
       (f) => f.id === selectedAlloyFinish,
     );
-    if ((!selectedAlloyFinish || !isValidFinishSelected) && finishes.length > 0) {
+    if (
+      (!selectedAlloyFinish || !isValidFinishSelected) &&
+      finishes.length > 0
+    ) {
       setSelectedAlloyFinish(finishes[0].id);
     }
   }, [selectedAlloyFinish, finishes, setSelectedAlloyFinish]);
@@ -51,6 +52,7 @@ export const AlloyFinishSelector = ({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
       {(finishes || []).map((finish) => {
+        console.log("finish id:", finish.id);
         const alloyForFinish = allAlloys.find(
           (alloy) =>
             alloy.designId === selectedAlloyDesign &&
