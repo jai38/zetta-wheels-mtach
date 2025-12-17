@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast"; // Import useToast
 import { useIsMobile } from "@/hooks/use-mobile"; // NEW
 import { ImageViewerModal } from "@/components/ImageViewerModal"; // NEW
 import { cn } from "@/lib/utils"; // NEW, needed for conditional classes
+import SizePicker from "@/components/SizePicker";
 
 const CarDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +23,8 @@ const CarDetail = () => {
     selectedAlloyFinish,
     setCurrentCarId,
     currentCarId,
+    selectedAlloySize,
+    setSelectedAlloyDesign,
   } = useCarStore();
   const { toast } = useToast(); // Call useToast
   const isMobile = useIsMobile(); // NEW: Call useIsMobile
@@ -39,27 +42,28 @@ const CarDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Set current car ID from URL parameter
-  useEffect(() => {
-    if (id) {
-      const carId = parseInt(id, 10);
-      if (!isNaN(carId)) {
-        setCurrentCarId(carId);
-      }
-    }
-  }, [id, setCurrentCarId]);
-
-  // Fetch car data on mount or when currentCarId changes
+  // Fetch car data on mount or when id from URL changes
   useEffect(() => {
     const fetchCarAndAlloys = async () => {
-      if (!currentCarId) {
+      if (!id) {
         setLoading(false);
+        setError("No car ID provided.");
         return;
       }
       setLoading(true);
       setError(null);
       try {
-        const carData = await carService.getCarById(currentCarId);
+        const carId = parseInt(id, 10);
+        if (isNaN(carId)) {
+          setError("Invalid car ID format.");
+          setLoading(false);
+          return;
+        }
+
+        // Set the store ID for other potential components, but don't rely on it for fetching
+        setCurrentCarId(carId);
+
+        const carData = await carService.getCarById(carId);
         setCar(carData);
 
         const alloysData = await alloyService.getAlloys({
@@ -69,13 +73,13 @@ const CarDetail = () => {
         setAllAlloys(alloysData.alloys);
       } catch (err) {
         console.error("Failed to fetch car details:", err);
-        setError("Failed to load car details");
+        setError("Failed to load car details.");
       } finally {
         setLoading(false);
       }
     };
     fetchCarAndAlloys();
-  }, [currentCarId]);
+  }, [id, setCurrentCarId]);
 
   // Fetch new car when color changes
   useEffect(() => {
@@ -94,6 +98,7 @@ const CarDetail = () => {
           const newCar = carsData.cars[0];
           setCar(newCar);
           setCurrentCarId(newCar.id);
+          setSelectedAlloyDesign(null); // Reset alloy selection
         }
       } catch (err) {
         console.error("Failed to fetch car by color:", err);
@@ -101,15 +106,21 @@ const CarDetail = () => {
     };
 
     fetchCarByColor();
-  }, [selectedColor, car?.variantId, setCurrentCarId]);
+  }, [selectedColor, car?.variantId, setCurrentCarId, setSelectedAlloyDesign]);
 
   // set current alloy details based on selections
   useEffect(() => {
-    if (selectedAlloyDesign && selectedAlloyFinish && allAlloys.length > 0) {
+    if (
+      selectedAlloyDesign &&
+      selectedAlloyFinish &&
+      selectedAlloySize &&
+      allAlloys.length > 0
+    ) {
       const newAlloy = allAlloys.find(
         (alloy) =>
           alloy.designId === selectedAlloyDesign &&
-          alloy.finishId === selectedAlloyFinish,
+          alloy.finishId === selectedAlloyFinish &&
+          alloy.sizeId === selectedAlloySize,
       );
       if (newAlloy) {
         setCurrentAlloyDetails(newAlloy);
@@ -125,6 +136,7 @@ const CarDetail = () => {
   }, [
     selectedAlloyDesign,
     selectedAlloyFinish,
+    selectedAlloySize,
     allAlloys,
     setSelectedAlloy,
   ]);
@@ -313,11 +325,14 @@ const AlloySelection = ({
   currentAlloyDetails: Alloy | null;
 }) => (
   <div className="container mx-auto px-4 py-8">
-    {currentAlloyDetails && (
-      <div className="mb-8 text-3xl font-semibold">
-        {currentAlloyDetails.alloyName}
-      </div>
-    )}
+    <div className="flex justify-between items-center mb-8">
+      {currentAlloyDetails && (
+        <div className="text-3xl font-semibold">
+          {currentAlloyDetails.alloyName}
+        </div>
+      )}
+      <SizePicker allAlloys={allAlloys} />
+    </div>
     <div className="mb-8">
       <h2 className="text-2xl font-bold mb-4">Alloy Design</h2>
       <AlloyDesignSelector carId={carId} allAlloys={allAlloys} />
