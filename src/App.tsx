@@ -16,7 +16,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout> {/* Wrap Routes with Layout */}
+        <Layout>
+          {/* Wrap Routes with Layout */}
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/cars/:id" element={<CarDetail />} />
