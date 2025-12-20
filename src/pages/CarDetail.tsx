@@ -235,6 +235,22 @@ const CarDetail = () => {
     setSelectedAlloy,
   ]);
 
+  // --- COMPUTED VALUES ---
+  
+  // Use image from images array if available, otherwise fall back to carImage
+  const carImageUrl = car && car.images && car.images.length > 0 
+    ? car.images[0].image_url 
+    : car?.carImage || "";
+
+  // Debug logging (must be before early returns)
+  useEffect(() => {
+    if (car) {
+      console.log("Car data:", car);
+      console.log("Car images array:", car.images);
+      console.log("Car image URL:", carImageUrl);
+    }
+  }, [car, carImageUrl]);
+
   // --- RENDER LOGIC ---
 
   if (loading) {
@@ -278,6 +294,7 @@ const CarDetail = () => {
         <CarHeader carTitle={carTitle} car={car} setSelectedColor={setSelectedColor} />
         <CarDisplay
           car={car}
+          carImageUrl={carImageUrl}
           isMobile={isMobile}
           handleCanvasClick={handleCanvasClick}
           carCanvasRef={carCanvasRef}
@@ -319,6 +336,7 @@ const CarHeader = ({ carTitle, car, setSelectedColor }: { carTitle: string; car:
 
 const CarDisplay = ({
   car,
+  carImageUrl,
   isMobile,
   handleCanvasClick,
   carCanvasRef,
@@ -326,25 +344,34 @@ const CarDisplay = ({
   handleDownloadImage,
 }: {
   car: Car;
+  carImageUrl: string;
   isMobile: boolean;
   handleCanvasClick: () => void;
   carCanvasRef: React.RefObject<CarCanvasRef>;
   wheelImage: string;
   handleDownloadImage: () => void;
-}) => (
-  <div className="w-full relative">
-    {car.carImage && (
+}) => {
+  if (!carImageUrl) {
+    return (
+      <div className="w-full relative flex items-center justify-center min-h-[400px] bg-muted rounded-lg">
+        <p className="text-muted-foreground">No car image available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full relative">
       <div
         className={cn("relative", isMobile && "cursor-pointer")}
         onClick={handleCanvasClick}>
         <CarCanvas
           ref={carCanvasRef}
-          carImage={car.carImage}
+          carImage={carImageUrl}
           wheelImage={wheelImage}
-          x_front={car.x_front}
-          y_front={car.y_front}
-          x_rear={car.x_rear}
-          y_rear={car.y_rear}
+          x_front={car.x_front ?? 0}
+          y_front={car.y_front ?? 0}
+          x_rear={car.x_rear ?? 0}
+          y_rear={car.y_rear ?? 0}
           wheelSize={car.wheelSize}
         />
         <Button
@@ -357,9 +384,9 @@ const CarDisplay = ({
           <DownloadIcon />
         </Button>
       </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 
 const AlloySelection = ({

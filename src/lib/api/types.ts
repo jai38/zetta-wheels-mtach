@@ -83,11 +83,17 @@ export interface Variant {
 }
 
 // Car Types
+export interface CarImage {
+  id: number;
+  image_url: string;
+}
+
 export interface Car {
   id: number;
   variantId: number;
   colorId: number;
   carImage: string;
+  images?: CarImage[];
   x_front?: number;
   y_front?: number;
   x_rear?: number;
