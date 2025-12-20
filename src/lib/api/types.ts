@@ -163,7 +163,7 @@ export interface Alloy {
   finishId: number;
   sizeId: number;
   alloyName: string;
-  alloyImages: string[];
+  images: string[];
   isActive: boolean;
   design?: AlloyDesign;
   pcd?: AlloyPCD;

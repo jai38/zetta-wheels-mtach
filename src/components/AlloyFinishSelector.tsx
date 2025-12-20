@@ -35,7 +35,7 @@ export const AlloyFinishSelector = ({
             alloy.designId === selectedAlloyDesign &&
             alloy.finishId === finish.id,
         );
-        const imageUrl = alloyForFinish?.alloyImages?.[0];
+        const imageUrl = alloyForFinish?.images?.[0];
 
         return (
           <Card
@@ -68,4 +68,3 @@ export const AlloyFinishSelector = ({
 };
 
 export default AlloyFinishSelector;
-

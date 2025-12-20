@@ -128,7 +128,8 @@ const CarDetail = () => {
     alloys
       .filter((alloy) => {
         const designMatch = alloy.designId === designId;
-        const dependencyMatch = !dependencyId || alloy[dependencyKey] === dependencyId;
+        const dependencyMatch =
+          !dependencyId || alloy[dependencyKey] === dependencyId;
         return designMatch && dependencyMatch;
       })
       .forEach((alloy) => {
@@ -175,22 +176,51 @@ const CarDetail = () => {
   useEffect(() => {
     // Set initial size and finish when design changes
     if (selectedAlloyDesign && !selectedAlloySize && !selectedAlloyFinish) {
-      const firstSize = getAvailable<AlloySize>(allAlloys, selectedAlloyDesign, "size", "sizeId", null, "finishId")[0];
+      const firstSize = getAvailable<AlloySize>(
+        allAlloys,
+        selectedAlloyDesign,
+        "size",
+        "sizeId",
+        null,
+        "finishId",
+      )[0];
       if (firstSize) {
         setSelectedAlloySize(firstSize.id);
-        const firstFinish = getAvailable<AlloyFinish>(allAlloys, selectedAlloyDesign, "finish", "finishId", firstSize.id, "sizeId")[0];
+        const firstFinish = getAvailable<AlloyFinish>(
+          allAlloys,
+          selectedAlloyDesign,
+          "finish",
+          "finishId",
+          firstSize.id,
+          "sizeId",
+        )[0];
         if (firstFinish) {
           setSelectedAlloyFinish(firstFinish.id);
         }
       }
     }
-  }, [selectedAlloyDesign, allAlloys, selectedAlloySize, selectedAlloyFinish, setSelectedAlloySize, setSelectedAlloyFinish]);
-
+  }, [
+    selectedAlloyDesign,
+    allAlloys,
+    selectedAlloySize,
+    selectedAlloyFinish,
+    setSelectedAlloySize,
+    setSelectedAlloyFinish,
+  ]);
 
   const handleSizeSelect = (sizeId: number) => {
     setSelectedAlloySize(sizeId);
-    const newFinishes = getAvailable<AlloyFinish>(allAlloys, selectedAlloyDesign, "finish", "finishId", sizeId, "sizeId");
-    const isCurrentFinishValid = newFinishes.some(f => f.id === selectedAlloyFinish);
+    const newFinishes = getAvailable<AlloyFinish>(
+      allAlloys,
+      selectedAlloyDesign,
+      "finish",
+      "finishId",
+      sizeId,
+      "sizeId",
+    );
+    const isCurrentFinishValid = newFinishes.some(
+      (f) => f.id === selectedAlloyFinish,
+    );
 
     if (!isCurrentFinishValid && newFinishes.length > 0) {
       setSelectedAlloyFinish(newFinishes[0].id);
@@ -199,14 +229,20 @@ const CarDetail = () => {
 
   const handleFinishSelect = (finishId: number) => {
     setSelectedAlloyFinish(finishId);
-    const newSizes = getAvailable<AlloySize>(allAlloys, selectedAlloyDesign, "size", "sizeId", finishId, "finishId");
-    const isCurrentSizeValid = newSizes.some(s => s.id === selectedAlloySize);
+    const newSizes = getAvailable<AlloySize>(
+      allAlloys,
+      selectedAlloyDesign,
+      "size",
+      "sizeId",
+      finishId,
+      "finishId",
+    );
+    const isCurrentSizeValid = newSizes.some((s) => s.id === selectedAlloySize);
 
     if (!isCurrentSizeValid && newSizes.length > 0) {
       setSelectedAlloySize(newSizes[0].id);
     }
   };
-
 
   useEffect(() => {
     if (
@@ -236,11 +272,12 @@ const CarDetail = () => {
   ]);
 
   // --- COMPUTED VALUES ---
-  
+
   // Use image from images array if available, otherwise fall back to carImage
-  const carImageUrl = car && car.images && car.images.length > 0 
-    ? car.images[0].image_url 
-    : car?.carImage || "";
+  const carImageUrl =
+    car && car.images && car.images.length > 0
+      ? car.images[0].image_url
+      : car?.carImage || "";
 
   // Debug logging (must be before early returns)
   useEffect(() => {
@@ -278,7 +315,7 @@ const CarDetail = () => {
     ? `${car.variant.model.make.name} ${car.variant.model.name} ${car.variant.name}`
     : "Car";
 
-  const wheelImage = currentAlloyDetails?.alloyImages?.[0] || "";
+  const wheelImage = currentAlloyDetails?.images?.[0] || "";
 
   const handleDownloadImage = () => {
     // Implementation was removed for brevity, but would be here
@@ -291,7 +328,11 @@ const CarDetail = () => {
   return (
     <>
       <div className="w-full container mx-auto px-4 py-8">
-        <CarHeader carTitle={carTitle} car={car} setSelectedColor={setSelectedColor} />
+        <CarHeader
+          carTitle={carTitle}
+          car={car}
+          setSelectedColor={setSelectedColor}
+        />
         <CarDisplay
           car={car}
           carImageUrl={carImageUrl}
@@ -325,7 +366,15 @@ const CarDetail = () => {
 export default CarDetail;
 
 // Helper Components
-const CarHeader = ({ carTitle, car, setSelectedColor }: { carTitle: string; car: Car, setSelectedColor: (color: number) => void; }) => (
+const CarHeader = ({
+  carTitle,
+  car,
+  setSelectedColor,
+}: {
+  carTitle: string;
+  car: Car;
+  setSelectedColor: (color: number) => void;
+}) => (
   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center m-4 sm:m-8 gap-4">
     <h1 className="text-3xl sm:text-4xl font-bold">{carTitle}</h1>
     <div className="flex flex-col sm:flex-row gap-4">
@@ -351,6 +400,7 @@ const CarDisplay = ({
   wheelImage: string;
   handleDownloadImage: () => void;
 }) => {
+  console.log("Rendering CarDisplay with carImageUrl:", wheelImage);
   if (!carImageUrl) {
     return (
       <div className="w-full relative flex items-center justify-center min-h-[400px] bg-muted rounded-lg">
@@ -387,7 +437,6 @@ const CarDisplay = ({
     </div>
   );
 };
-
 
 const AlloySelection = ({
   carId,
@@ -450,8 +499,7 @@ const DownloadIcon = () => (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-download"
-  >
+    className="lucide lucide-download">
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
     <polyline points="7 10 12 15 17 10" />
     <line x1="12" x2="12" y1="15" y2="3" />
