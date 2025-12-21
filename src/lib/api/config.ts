@@ -56,7 +56,6 @@ export const API_ENDPOINTS = {
     MAKES: '/api/v1/admin/car/makes',
     MODELS: '/api/v1/admin/car/models',
     COLORS: '/api/v1/admin/car/colors',
-    VARIANTS: '/api/v1/admin/car/variants',
   },
   // Cars
   CARS: '/api/v1/admin/cars',

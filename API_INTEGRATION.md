@@ -49,8 +49,7 @@ All API services are located in `src/lib/api/`:
    - `getMakes(params)` - Get list of car makes
    - `getModels(params)` - Get list of car models
    - `getColors(params)` - Get list of colors
-   - `getVariants(params)` - Get list of variants
-   - `getCars(params)` - Get list of cars with pagination and filters
+    - `getCars(params)` - Get list of cars with pagination and filters
    - `getCarById(id)` - Get single car details
    - `createCar(data)` - Create new car (admin)
    - `updateCar(id, data)` - Update car (admin)
@@ -76,7 +75,7 @@ The API configuration is in `src/lib/api/config.ts`:
 ### Types
 All TypeScript types are defined in `src/lib/api/types.ts`:
 - API response wrappers
-- Entity types (Car, Alloy, Make, Model, Color, Variant, etc.)
+- Entity types (Car, Alloy, Make, Model, Color, etc.)
 - Query parameter types
 - Pagination types
 
@@ -109,8 +108,6 @@ All admin routes in the backend require authentication:
 - `POST /api/v1/admin/car/models` - Create model (requires auth)
 - `GET /api/v1/admin/car/colors` - Get colors
 - `POST /api/v1/admin/car/colors` - Create color (requires auth)
-- `GET /api/v1/admin/car/variants` - Get variants
-- `POST /api/v1/admin/car/variants` - Create variant (requires auth)
 
 ### Cars
 - `GET /api/v1/admin/cars` - List cars (supports filtering and pagination)
@@ -143,7 +140,6 @@ All admin routes in the backend require authentication:
 - `search` - Search term for model/make names
 - `makeId` - Filter by make ID
 - `modelId` - Filter by model ID
-- `variantId` - Filter by variant ID
 - `colorId` - Filter by color ID
 - `isActive` - Filter by active status
 
@@ -204,7 +200,7 @@ List endpoints include pagination data:
 
 ### Components
 1. **CarCard.tsx** - Car card component
-   - Updated to display car data from API (make, model, variant, color)
+   - Updated to display car data from API (make, model, color)
    - Shows car image with fallback
 
 ### Store

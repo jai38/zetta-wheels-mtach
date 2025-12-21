@@ -71,17 +71,6 @@ export interface Color {
   updatedAt?: string;
 }
 
-export interface Variant {
-  id: number;
-  name: string;
-  modelId: number;
-  defaultAlloySize: number;
-  isActive?: boolean;
-  model?: CarModel;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 // Car Types
 export interface CarImage {
   id: number;
@@ -90,7 +79,7 @@ export interface CarImage {
 
 export interface Car {
   id: number;
-  variantId: number;
+  modelId: number;
   colorId: number;
   carImage: string;
   images?: CarImage[];
@@ -100,7 +89,7 @@ export interface Car {
   y_rear?: number;
   wheelSize?: number;
   isActive: boolean;
-  variant?: Variant;
+  model?: CarModel;
   color?: Color;
   createdAt?: string;
   updatedAt?: string;
@@ -201,21 +190,12 @@ export interface ColorsQueryParams {
   isActive?: boolean;
 }
 
-export interface VariantsQueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  modelId?: number;
-  isActive?: boolean;
-}
-
 export interface CarsQueryParams {
   page?: number;
   limit?: number;
   search?: string;
   makeId?: number;
   modelId?: number;
-  variantId?: number;
   colorId?: number;
   isActive?: boolean;
 }

@@ -9,9 +9,9 @@ interface CarCardProps {
 export const CarCard = ({ car }: CarCardProps) => {
   const navigate = useNavigate();
 
-  // Build car title from variant and model data
-  const carTitle = car.variant?.model?.make
-    ? `${car.variant.model.make.name} ${car.variant.model.name} ${car.variant.name}`
+  // Build car title from model data
+  const carTitle = car.model?.make
+    ? `${car.model.make.name} ${car.model.name}`
     : 'Car';
 
   return (
@@ -40,8 +40,8 @@ export const CarCard = ({ car }: CarCardProps) => {
             {car.color && (
               <p className="text-sm text-muted-foreground mb-1">{car.color.name}</p>
             )}
-            {car.variant?.defaultAlloySize && (
-              <p className="text-sm text-muted-foreground">{car.variant.defaultAlloySize}" wheels</p>
+            {car.wheelSize && (
+              <p className="text-sm text-muted-foreground">{car.wheelSize}" wheels</p>
             )}
           </div>
         </div>

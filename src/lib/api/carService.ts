@@ -3,13 +3,11 @@ import type {
   Make,
   CarModel,
   Color,
-  Variant,
   Car,
   CarsListResponse,
   MakesQueryParams,
   ModelsQueryParams,
   ColorsQueryParams,
-  VariantsQueryParams,
   CarsQueryParams,
   ApiResponse,
   Pagination,
@@ -62,22 +60,6 @@ export const getColors = async (params?: ColorsQueryParams): Promise<{ items: Co
   }
 
   throw new Error(response.data.message || 'Failed to fetch colors');
-};
-
-/**
- * Get list of variants
- */
-export const getVariants = async (params?: VariantsQueryParams): Promise<{ items: Variant[]; pagination: Pagination }> => {
-  const response = await apiClient.get<ApiResponse<{ items: Variant[]; pagination: Pagination }>>(
-    API_ENDPOINTS.CAR.VARIANTS,
-    { params }
-  );
-
-  if (response.data.data) {
-    return response.data.data;
-  }
-
-  throw new Error(response.data.message || 'Failed to fetch variants');
 };
 
 /**

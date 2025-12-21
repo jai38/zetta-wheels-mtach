@@ -2,17 +2,15 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { DependentSelect } from "@/components/DependentSelect";
 import { useCarStore } from "@/stores/useCarStore";
-import { carService, type Make, type CarModel, type Variant } from "@/lib/api";
+import { carService, type Make, type CarModel } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const { selectedMake, selectedModel, setSelectedMake, setSelectedModel } =
     useCarStore();
-  const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
 
   const [makes, setMakes] = useState<Make[]>([]);
   const [models, setModels] = useState<CarModel[]>([]);
-  const [variants, setVariants] = useState<Variant[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -54,36 +52,14 @@ const Index = () => {
     fetchModels();
   }, [selectedMake]);
 
-  // Load variants when model changes
-  useEffect(() => {
-    const fetchVariants = async () => {
-      if (!selectedModel) {
-        setVariants([]);
-        return;
-      }
-      try {
-        const result = await carService.getVariants({
-          modelId: selectedModel,
-          limit: 100,
-          isActive: true,
-        });
-        setVariants(result.items);
-      } catch (err) {
-        console.error("Failed to fetch variants:", err);
-      }
-    };
-    fetchVariants();
-  }, [selectedModel]);
+  const handleModelChange = async (modelId: number | null) => {
+    setSelectedModel(modelId);
 
-  const handleVariantChange = async (variantId: number | null) => {
-    setSelectedVariant(variantId);
-
-    if (variantId) {
+    if (modelId) {
       try {
         const result = await carService.getCars({
           makeId: selectedMake || undefined,
-          modelId: selectedModel || undefined,
-          variantId: variantId,
+          modelId: modelId,
           limit: 1,
           isActive: true,
         });
@@ -91,8 +67,8 @@ const Index = () => {
         if (result.cars.length > 0) {
           navigate(`/cars/${result.cars[0].id}`);
         } else {
-          console.warn("No car found for the selected variant.");
-          setError("Could not find a matching car for the selected variant.");
+          console.warn("No car found for the selected model.");
+          setError("Could not find a matching car for the selected model.");
         }
       } catch (err) {
         console.error("Failed to fetch car for navigation:", err);
@@ -145,7 +121,6 @@ const Index = () => {
                   const makeId = val ? parseInt(val) : null;
                   setSelectedMake(makeId);
                   setSelectedModel(null);
-                  setSelectedVariant(null);
                 }}
                 placeholder="Select Make"
               />
@@ -155,25 +130,11 @@ const Index = () => {
                   name: m.name,
                 }))}
                 value={selectedModel?.toString() || ""}
-                onChange={(val) => {
-                  const modelId = val ? parseInt(val) : null;
-                  setSelectedModel(modelId);
-                  setSelectedVariant(null);
-                }}
+                onChange={(val) =>
+                  handleModelChange(val ? parseInt(val) : null)
+                }
                 placeholder="Select Model"
                 disabled={!selectedMake}
-              />
-              <DependentSelect
-                options={variants.map((variant) => ({
-                  id: variant.id.toString(),
-                  name: variant.name,
-                }))}
-                value={selectedVariant?.toString() || ""}
-                onChange={(val) =>
-                  handleVariantChange(val ? parseInt(val) : null)
-                }
-                placeholder="Select Variant"
-                disabled={!selectedModel}
               />
             </div>
           </motion.div>

@@ -89,11 +89,11 @@ const CarDetail = () => {
 
   useEffect(() => {
     const fetchCarByColor = async () => {
-      if (!selectedColor || !car?.variantId) return;
+      if (!selectedColor || !car?.modelId) return;
 
       try {
         const carsData = await carService.getCars({
-          variantId: car.variantId,
+          modelId: car.modelId,
           colorId: selectedColor,
           limit: 1,
           isActive: true,
@@ -111,7 +111,7 @@ const CarDetail = () => {
     };
 
     fetchCarByColor();
-  }, [selectedColor, car?.variantId, setCurrentCarId, setSelectedAlloyDesign]);
+  }, [selectedColor, car?.modelId, setCurrentCarId, setSelectedAlloyDesign]);
 
   // --- ALLOY FILTERING LOGIC ---
 
@@ -311,8 +311,8 @@ const CarDetail = () => {
     );
   }
 
-  const carTitle = car.variant?.model?.make
-    ? `${car.variant.model.make.name} ${car.variant.model.name} ${car.variant.name}`
+  const carTitle = car.model?.make
+    ? `${car.model.make.name} ${car.model.name}`
     : "Car";
 
   const wheelImage = currentAlloyDetails?.images?.[0] || "";
