@@ -143,6 +143,7 @@ const CarDetail = () => {
     if (filterKey === "size") {
       (items as AlloySize[]).sort((a, b) => a.diameter - b.diameter);
     }
+    console.log(`Available ${filterKey}s:`, items);
     return items;
   };
 
@@ -153,10 +154,10 @@ const CarDetail = () => {
         selectedAlloyDesign,
         "size",
         "sizeId",
-        selectedAlloyFinish,
+        null,
         "finishId",
       ),
-    [allAlloys, selectedAlloyDesign, selectedAlloyFinish],
+    [allAlloys, selectedAlloyDesign],
   );
 
   const availableFinishes = useMemo(
@@ -319,7 +320,32 @@ const CarDetail = () => {
   const wheelImage = currentAlloyDetails?.images?.[0] || "";
 
   const handleDownloadImage = () => {
-    // Implementation was removed for brevity, but would be here
+    const canvas = carCanvasRef.current?.getCanvas();
+    if (canvas) {
+      try {
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = image;
+        link.download = `${carTitle
+          .replace(/\s+/g, "-")
+          .toLowerCase()}-custom.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast({
+          title: "Success",
+          description: "Image downloaded successfully",
+        });
+      } catch (error) {
+        console.error("Failed to download image:", error);
+        toast({
+          title: "Error",
+          description:
+            "Failed to download image. The image source might be restricted.",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   const handleCanvasClick = () => {
