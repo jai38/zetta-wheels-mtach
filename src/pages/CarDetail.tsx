@@ -19,6 +19,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageViewerModal } from "@/components/ImageViewerModal";
 import { cn } from "@/lib/utils";
 import SizePicker from "@/components/SizePicker";
+import carBackground from "@/assets/car_background.png";
 
 const CarDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -333,21 +334,29 @@ const CarDetail = () => {
           car={car}
           setSelectedColor={setSelectedColor}
         />
-        <CarDisplay
-          car={car}
-          carImageUrl={carImageUrl}
-          isMobile={isMobile}
-          handleCanvasClick={handleCanvasClick}
-          carCanvasRef={carCanvasRef}
-          wheelImage={wheelImage}
-          handleDownloadImage={handleDownloadImage}
-        />
-        <ImageViewerModal
-          imageUrl={imageViewerUrl}
-          open={showImageViewerModal}
-          onClose={() => setShowImageViewerModal(false)}
-        />
       </div>
+
+      <div className="relative w-full overflow-hidden bg-muted/30">
+        {/* Full-width background image */}
+        <div
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${carBackground})` }}
+        />
+
+        {/* Content over background, kept in container for layout consistency */}
+        <div className="relative z-10 w-full container mx-auto px-4 py-8">
+          <CarDisplay
+            car={car}
+            carImageUrl={carImageUrl}
+            isMobile={isMobile}
+            handleCanvasClick={handleCanvasClick}
+            carCanvasRef={carCanvasRef}
+            wheelImage={wheelImage}
+            handleDownloadImage={handleDownloadImage}
+          />
+        </div>
+      </div>
+
       <AlloySelection
         carId={car.id}
         allAlloys={allAlloys}
@@ -358,6 +367,12 @@ const CarDetail = () => {
         selectedFinish={selectedAlloyFinish}
         onSelectSize={handleSizeSelect}
         onSelectFinish={handleFinishSelect}
+      />
+
+      <ImageViewerModal
+        imageUrl={imageViewerUrl}
+        open={showImageViewerModal}
+        onClose={() => setShowImageViewerModal(false)}
       />
     </>
   );
