@@ -89,6 +89,7 @@ export interface Car {
   y_rear?: number;
   wheelSize?: number;
   isActive: boolean;
+  isDefault?: boolean;
   model?: CarModel;
   color?: Color;
   createdAt?: string;
@@ -105,90 +106,7 @@ export interface CarColorOption {
   carIds: number[];
 }
 
-// Alloy Master Data Types
-export interface AlloyDesign {
-  id: number;
-  name: string;
-  previewImageUrl?: string;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface AlloyPCD {
-  id: number;
-  name: string;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface AlloyFinish {
-  id: number;
-  name: string;
-  description?: string;
-  colorCode?: string;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface AlloySize {
-  id: number;
-  diameter: number;
-  width: number;
-  offset: string;
-  specs: string;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-// Alloy Types
-export interface Alloy {
-  id: number;
-  designId: number;
-  pcdId: number;
-  finishId: number;
-  sizeId: number;
-  alloyName: string;
-  images: string[];
-  isActive: boolean;
-  design?: AlloyDesign;
-  pcd?: AlloyPCD;
-  finish?: AlloyFinish;
-  size?: AlloySize;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface AlloysListResponse {
-  alloys: Alloy[];
-  pagination: Pagination;
-}
-
-// Query Parameters
-export interface MakesQueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  isActive?: boolean;
-}
-
-export interface ModelsQueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  makeId?: number;
-  isActive?: boolean;
-}
-
-export interface ColorsQueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  isActive?: boolean;
-}
+// ... (omitted code)
 
 export interface CarsQueryParams {
   page?: number;
@@ -198,6 +116,7 @@ export interface CarsQueryParams {
   modelId?: number;
   colorId?: number;
   isActive?: boolean;
+  isDefault?: boolean;
 }
 
 export interface AlloysQueryParams {

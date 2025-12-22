@@ -35,7 +35,7 @@ export const AlloyDesignSelector = ({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
       {(designs || []).map((design) => {
         const alloyForDesign = allAlloys.find(
           (alloy) => alloy.designId === design.id,
@@ -51,13 +51,13 @@ export const AlloyDesignSelector = ({
                 "border-primary ring-2 ring-primary",
             )}
             onClick={() => setSelectedAlloyDesign(design.id)}>
-            <CardContent className="p-4 flex flex-col items-center gap-2">
+            <CardContent className="p-2 flex flex-col items-center gap-1">
               <img
                 src={imageUrl}
                 alt={design.name}
-                className="w-24 h-24 object-contain"
+                className="w-16 h-16 object-contain"
               />
-              <p className="text-sm font-medium">{design.name}</p>
+              <p className="text-xs font-medium text-center line-clamp-1">{design.name}</p>
             </CardContent>
           </Card>
         );

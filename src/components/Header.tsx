@@ -8,13 +8,8 @@ export const Header: React.FC = () => {
     <header className="bg-[--header-footer-background] text-[--header-footer-foreground] p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="text-xl font-bold">
-          NeoWheels
+          Neo Wheel Match
         </Link>
-        <nav>
-          <Button variant="ghost" className="text-[--header-footer-foreground]">
-            Home
-          </Button>
-        </nav>
       </div>
     </header>
   );

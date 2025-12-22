@@ -57,12 +57,24 @@ const Index = () => {
 
     if (modelId) {
       try {
-        const result = await carService.getCars({
+        // First try to get the default car for this model
+        let result = await carService.getCars({
           makeId: selectedMake || undefined,
           modelId: modelId,
           limit: 1,
           isActive: true,
+          isDefault: true,
         });
+
+        // If no default car found, fall back to any active car
+        if (result.cars.length === 0) {
+          result = await carService.getCars({
+            makeId: selectedMake || undefined,
+            modelId: modelId,
+            limit: 1,
+            isActive: true,
+          });
+        }
 
         if (result.cars.length > 0) {
           navigate(`/cars/${result.cars[0].id}`);

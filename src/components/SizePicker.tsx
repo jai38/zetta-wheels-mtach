@@ -17,14 +17,18 @@ export const SizePicker = ({
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <p className="text-sm font-medium">Size:</p>
+    <div className="flex items-center gap-3">
+      <p className="text-base font-semibold text-muted-foreground mr-1">Size:</p>
       {sizes.map((size) => (
         <Button
           key={size.id}
           variant={selectedSize === size.id ? "default" : "outline"}
           onClick={() => onSelectSize(size.id)}
-          className="p-2"
+          className={`h-10 min-w-[3.5rem] text-lg font-bold transition-all ${
+            selectedSize === size.id 
+              ? "bg-primary text-primary-foreground shadow-md scale-105" 
+              : "hover:bg-accent hover:text-accent-foreground"
+          }`}
         >
           {size.diameter}"
         </Button>

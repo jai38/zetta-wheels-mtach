@@ -27,7 +27,7 @@ export const AlloyFinishSelector = ({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
       {finishes.map((finish) => {
         // Find an alloy that has this specific design and finish to get an image
         const alloyForFinish = allAlloys.find(
@@ -46,19 +46,19 @@ export const AlloyFinishSelector = ({
                 "border-primary ring-2 ring-primary",
             )}
             onClick={() => onSelectFinish(finish.id)}>
-            <CardContent className="p-4 flex flex-col items-center gap-2">
+            <CardContent className="p-2 flex flex-col items-center gap-1">
               {imageUrl ? (
                 <img
                   src={imageUrl}
                   alt={finish.name}
-                  className="w-24 h-24 object-contain"
+                  className="w-16 h-16 object-contain"
                 />
               ) : (
                 <div
-                  className="w-24 h-24 rounded-full"
+                  className="w-16 h-16 rounded-full"
                   style={{ backgroundColor: finish.colorCode }}></div>
               )}
-              <p className="text-sm font-medium">{finish.name}</p>
+              <p className="text-xs font-medium text-center line-clamp-1">{finish.name}</p>
             </CardContent>
           </Card>
         );

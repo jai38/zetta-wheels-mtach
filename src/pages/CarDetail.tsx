@@ -354,7 +354,7 @@ const CarDetail = () => {
 
   return (
     <>
-      <div className="w-full container mx-auto px-4 py-8">
+      <div className="w-full container mx-auto px-4 py-4">
         <CarHeader
           carTitle={carTitle}
           car={car}
@@ -370,7 +370,7 @@ const CarDetail = () => {
         />
 
         {/* Content over background, kept in container for layout consistency */}
-        <div className="relative z-10 w-full container mx-auto px-4 py-8">
+        <div className="relative z-10 w-full container mx-auto px-4 py-4">
           <CarDisplay
             car={car}
             carImageUrl={carImageUrl}
@@ -416,8 +416,8 @@ const CarHeader = ({
   car: Car;
   setSelectedColor: (color: number) => void;
 }) => (
-  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center m-4 sm:m-8 gap-4">
-    <h1 className="text-3xl sm:text-4xl font-bold">{carTitle}</h1>
+  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center m-2 sm:m-4 gap-4">
+    <h1 className="text-2xl sm:text-3xl font-bold">{carTitle}</h1>
     <div className="flex flex-col sm:flex-row gap-4">
       <ColorPicker car={car} onColorChange={setSelectedColor} />
     </div>
@@ -501,24 +501,46 @@ const AlloySelection = ({
   onSelectFinish: (finishId: number) => void;
 }) => (
   <div className="container mx-auto px-4 py-8">
-    <div className="flex justify-between items-center mb-8">
       {currentAlloyDetails && (
-        <div className="text-3xl font-semibold">
-          {currentAlloyDetails.alloyName}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center w-full mb-8 gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
+            <div className="text-3xl font-semibold">
+              {currentAlloyDetails.alloyName}
+            </div>
+             {currentAlloyDetails.buy_url && (
+              <Button
+                onClick={() => window.open(currentAlloyDetails.buy_url, "_blank")}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2 h-10 shadow-sm"
+              >
+                Buy Now
+              </Button>
+            )}
+          </div>
+          
+          <div className="w-full lg:w-auto flex justify-end">
+            <SizePicker
+              sizes={availableSizes}
+              selectedSize={selectedSize}
+              onSelectSize={onSelectSize}
+            />
+          </div>
         </div>
       )}
-      <SizePicker
-        sizes={availableSizes}
-        selectedSize={selectedSize}
-        onSelectSize={onSelectSize}
-      />
-    </div>
-    <div className="mb-8">
-      <h2 className="text-2xl font-bold mb-4">Alloy Design</h2>
+      {!currentAlloyDetails && (
+        <div className="flex justify-end w-full mb-8">
+            <SizePicker
+                sizes={availableSizes}
+                selectedSize={selectedSize}
+                onSelectSize={onSelectSize}
+            />
+        </div>
+      )}
+    <div className="mb-6">
+      <h2 className="text-xl font-bold mb-3">Alloy Design</h2>
       <AlloyDesignSelector carId={carId} allAlloys={allAlloys} />
     </div>
     <div>
-      <h2 className="text-2xl font-bold mb-4">Alloy Finish</h2>
+      <h2 className="text-xl font-bold mb-3">Alloy Finish</h2>
       <AlloyFinishSelector
         finishes={availableFinishes}
         selectedFinish={selectedFinish}
