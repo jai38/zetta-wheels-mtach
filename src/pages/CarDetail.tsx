@@ -69,8 +69,29 @@ const CarDetail = () => {
           return;
         }
 
-        setCurrentCarId(carId);
-        const carData = await carService.getCarById(carId);
+        let carData = await carService.getCarById(carId);
+        
+        // If the current car is not default, try to find the default one for this model
+        if (!carData.isDefault) {
+          const defaultCarsResult = await carService.getCars({
+            modelId: carData.modelId,
+            isDefault: true,
+            limit: 1,
+            isActive: true
+          });
+          
+          if (defaultCarsResult.cars.length > 0 && defaultCarsResult.cars[0].id !== carData.id) {
+            const defaultCar = defaultCarsResult.cars[0];
+            // We should ideally navigate to the default car's ID to keep URL in sync
+            // but the requirement says "always render the default car color".
+            // If we just set state, URL stays on non-default but we show default.
+            // Navigating is cleaner.
+            navigate(`/cars/${defaultCar.id}`, { replace: true });
+            return; // Effect will re-run with new ID
+          }
+        }
+
+        setCurrentCarId(carData.id);
         setCar(carData);
 
         const alloysData = await alloyService.getAlloys({
@@ -86,7 +107,7 @@ const CarDetail = () => {
       }
     };
     fetchCarAndAlloys();
-  }, [id, setCurrentCarId]);
+  }, [id, setCurrentCarId, navigate]);
 
   useEffect(() => {
     const fetchCarByColor = async () => {

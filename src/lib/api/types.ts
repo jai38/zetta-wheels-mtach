@@ -58,6 +58,12 @@ export interface CarModel {
   makeId: number;
   isActive: boolean;
   make?: Make;
+  defaultAlloySize?: number | null; // Inches
+  alloySize?: number; // Pixels
+  x_front?: number;
+  y_front?: number;
+  x_rear?: number;
+  y_rear?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -104,6 +110,7 @@ export interface CarsListResponse {
 export interface CarColorOption {
   color: Color;
   carIds: number[];
+  isDefault?: boolean;
 }
 
 // ... (omitted code)

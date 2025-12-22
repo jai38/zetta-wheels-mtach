@@ -58,7 +58,7 @@ export const ColorPicker = ({ car, onColorChange }: ColorPickerProps) => {
                 className="h-4 w-4 rounded-full border"
                 style={{ backgroundColor: option.color.colorCode }}
               />
-              {option.color.name}
+              {option.color.name} {option.isDefault && "(Default)"}
             </div>
           </SelectItem>
         ))}
