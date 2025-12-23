@@ -296,17 +296,13 @@ const CarDetail = () => {
 
   // --- COMPUTED VALUES ---
 
-  // Use image from images array if available, otherwise fall back to carImage
-  const carImageUrl =
-    car && car.images && car.images.length > 0
-      ? car.images[0].image_url
-      : car?.carImage || "";
+  // Use carImage directly
+  const carImageUrl = car?.carImage || "";
 
   // Debug logging (must be before early returns)
   useEffect(() => {
     if (car) {
       console.log("Car data:", car);
-      console.log("Car images array:", car.images);
       console.log("Car image URL:", carImageUrl);
     }
   }, [car, carImageUrl]);
@@ -338,7 +334,7 @@ const CarDetail = () => {
     ? `${car.model.make.name} ${car.model.name}`
     : "Car";
 
-  const wheelImage = currentAlloyDetails?.images?.[0] || "";
+  const wheelImage = currentAlloyDetails?.image_url || "";
 
   const handleDownloadImage = () => {
     const canvas = carCanvasRef.current?.getCanvas();

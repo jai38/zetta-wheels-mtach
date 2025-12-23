@@ -78,17 +78,11 @@ export interface Color {
 }
 
 // Car Types
-export interface CarImage {
-  id: number;
-  image_url: string;
-}
-
 export interface Car {
   id: number;
   modelId: number;
   colorId: number;
   carImage: string;
-  images?: CarImage[];
   x_front?: number;
   y_front?: number;
   x_rear?: number;
@@ -113,7 +107,67 @@ export interface CarColorOption {
   isDefault?: boolean;
 }
 
-// ... (omitted code)
+// Alloy Master Data Types
+export interface AlloyDesign {
+  id: number;
+  name: string;
+  description?: string;
+  previewImageUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AlloyPCD {
+  id: number;
+  name: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AlloyFinish {
+  id: number;
+  name: string;
+  description?: string;
+  colorCode?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AlloySize {
+  id: number;
+  diameter: number;
+  width: number;
+  offset: number | null;
+  specs: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Full Alloy Entity
+export interface Alloy {
+  id: number;
+  alloyName: string;
+  designId: number;
+  pcdId: number;
+  finishId: number;
+  sizeId: number;
+  buy_url?: string;
+  image_url?: string;
+  design?: AlloyDesign;
+  pcd?: AlloyPCD;
+  finish?: AlloyFinish;
+  size?: AlloySize;
+  carIds?: number[];
+  modelIds?: number[];
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AlloysListResponse {
+  alloys: Alloy[];
+  pagination: Pagination;
+}
 
 export interface CarsQueryParams {
   page?: number;

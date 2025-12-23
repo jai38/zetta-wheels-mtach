@@ -40,7 +40,7 @@ export const AlloyDesignSelector = ({
         const alloyForDesign = allAlloys.find(
           (alloy) => alloy.designId === design.id,
         );
-        const imageUrl = alloyForDesign?.images?.[0] || design.previewImageUrl;
+        const imageUrl = alloyForDesign?.image_url || design.previewImageUrl;
 
         return (
           <Card
