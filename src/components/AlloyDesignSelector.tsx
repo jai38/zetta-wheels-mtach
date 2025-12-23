@@ -25,9 +25,10 @@ export const AlloyDesignSelector = ({
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
       {designs.map((design) => {
-        const alloyForDesign = allAlloys.find(
-          (alloy) => alloy.designId === design.id,
-        );
+        const alloyForDesign =
+          allAlloys.find(
+            (alloy) => alloy.designId === design.id && alloy.image_url,
+          ) || allAlloys.find((alloy) => alloy.designId === design.id);
         const imageUrl = alloyForDesign?.image_url || design.previewImageUrl;
 
         return (

@@ -218,6 +218,34 @@ const CarDetail = () => {
     );
   }, [allAlloys, selectedDiameter, selectedAlloyDesign]);
 
+  const wheelImage = useMemo(() => {
+    // 1. Try to use the image from the specifically selected alloy (Design + Finish + Size)
+    if (currentAlloyDetails?.image_url) {
+      return currentAlloyDetails.image_url;
+    }
+
+    // 2. Fallback: If the selected specific alloy has no image, try to find ANY alloy
+    // with the same Design and Finish that DOES have an image.
+    // This handles cases where a new size variant was created but no image uploaded yet.
+    if (selectedAlloyDesign && selectedAlloyFinish) {
+      const fallbackAlloy = allAlloys.find(
+        (alloy) =>
+          alloy.designId === selectedAlloyDesign &&
+          alloy.finishId === selectedAlloyFinish &&
+          alloy.image_url,
+      );
+      if (fallbackAlloy?.image_url) {
+        console.log(
+          "Using fallback alloy image from size:",
+          fallbackAlloy.size?.diameter,
+        );
+        return fallbackAlloy.image_url;
+      }
+    }
+
+    return "";
+  }, [currentAlloyDetails, selectedAlloyDesign, selectedAlloyFinish, allAlloys]);
+
   // Debug logging for filtering
   useEffect(() => {
     console.log("Filtering Debug:", {
@@ -342,8 +370,6 @@ const CarDetail = () => {
   const carTitle = car.model?.make
     ? `${car.model.make.name} ${car.model.name}`
     : "Car";
-
-  const wheelImage = currentAlloyDetails?.image_url || "";
 
   const handleDownloadImage = async () => {
     const originalCanvas = carCanvasRef.current?.getCanvas();

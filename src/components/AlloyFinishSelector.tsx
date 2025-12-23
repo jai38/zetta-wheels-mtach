@@ -30,11 +30,18 @@ export const AlloyFinishSelector = ({
     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
       {finishes.map((finish) => {
         // Find an alloy that has this specific design and finish to get an image
-        const alloyForFinish = allAlloys.find(
-          (alloy) =>
-            alloy.designId === selectedAlloyDesign &&
-            alloy.finishId === finish.id,
-        );
+        const alloyForFinish =
+          allAlloys.find(
+            (alloy) =>
+              alloy.designId === selectedAlloyDesign &&
+              alloy.finishId === finish.id &&
+              alloy.image_url,
+          ) ||
+          allAlloys.find(
+            (alloy) =>
+              alloy.designId === selectedAlloyDesign &&
+              alloy.finishId === finish.id,
+          );
         const imageUrl = alloyForFinish?.image_url;
 
         return (
