@@ -137,26 +137,27 @@ const CarDetail = () => {
 
   // --- ALLOY FILTERING LOGIC ---
 
-  const getAvailable = <T extends AlloySize | AlloyFinish>(
+  const getAvailable = <T extends AlloySize | AlloyDesign | AlloyFinish>(
     alloys: Alloy[],
-    designId: number | null,
-    filterKey: "size" | "finish",
-    idKey: "sizeId" | "finishId",
-    dependencyId: number | null,
-    dependencyKey: "sizeId" | "finishId",
+    filterKey: "size" | "design" | "finish",
+    idKey: "sizeId" | "designId" | "finishId",
+    dependencies: Record<string, number | null> = {},
   ): T[] => {
-    if (!designId) return [];
     const itemMap = new Map<number, T>();
+    
     alloys
       .filter((alloy) => {
-        const designMatch = alloy.designId === designId;
-        const dependencyMatch =
-          !dependencyId || alloy[dependencyKey] === dependencyId;
-        return designMatch && dependencyMatch;
+        // Check all dependencies
+        return Object.entries(dependencies).every(([key, value]) => {
+          if (!value) return true; // Optional dependency
+          return (alloy as any)[key] === value;
+        });
       })
       .forEach((alloy) => {
-        if (alloy[filterKey]) {
-          itemMap.set(alloy[idKey], alloy[filterKey] as T);
+        const item = (alloy as any)[filterKey];
+        const id = (alloy as any)[idKey];
+        if (item && id) {
+          itemMap.set(id, item as T);
         }
       });
 
@@ -164,107 +165,90 @@ const CarDetail = () => {
     if (filterKey === "size") {
       (items as AlloySize[]).sort((a, b) => a.diameter - b.diameter);
     }
-    console.log(`Available ${filterKey}s:`, items);
     return items;
   };
 
   const availableSizes = useMemo(
-    () =>
-      getAvailable<AlloySize>(
-        allAlloys,
-        selectedAlloyDesign,
-        "size",
-        "sizeId",
-        null,
-        "finishId",
-      ),
-    [allAlloys, selectedAlloyDesign],
+    () => getAvailable<AlloySize>(allAlloys, "size", "sizeId"),
+    [allAlloys],
+  );
+
+  const availableDesigns = useMemo(
+    () => getAvailable<AlloyDesign>(
+      allAlloys, 
+      "design", 
+      "designId", 
+      { sizeId: selectedAlloySize }
+    ),
+    [allAlloys, selectedAlloySize],
   );
 
   const availableFinishes = useMemo(
-    () =>
-      getAvailable<AlloyFinish>(
-        allAlloys,
-        selectedAlloyDesign,
-        "finish",
-        "finishId",
-        selectedAlloySize,
-        "sizeId",
-      ),
-    [allAlloys, selectedAlloyDesign, selectedAlloySize],
+    () => getAvailable<AlloyFinish>(
+      allAlloys, 
+      "finish", 
+      "finishId", 
+      { sizeId: selectedAlloySize, designId: selectedAlloyDesign }
+    ),
+    [allAlloys, selectedAlloySize, selectedAlloyDesign],
   );
+
+  // Debug logging for filtering
+  useEffect(() => {
+    console.log("Filtering Debug:", {
+      totalAlloys: allAlloys.length,
+      selectedAlloySize,
+      selectedAlloyDesign,
+      selectedAlloyFinish,
+      availableSizes: availableSizes.map(s => s.diameter),
+      availableDesigns: availableDesigns.map(d => d.name),
+      availableFinishes: availableFinishes.map(f => f.name)
+    });
+  }, [allAlloys, selectedAlloySize, selectedAlloyDesign, selectedAlloyFinish, availableSizes, availableDesigns, availableFinishes]);
 
   // --- ALLOY SELECTION HANDLERS ---
 
   useEffect(() => {
-    // Set initial size and finish when design changes
-    if (selectedAlloyDesign && !selectedAlloySize && !selectedAlloyFinish) {
-      const firstSize = getAvailable<AlloySize>(
-        allAlloys,
-        selectedAlloyDesign,
-        "size",
-        "sizeId",
-        null,
-        "finishId",
-      )[0];
-      if (firstSize) {
-        setSelectedAlloySize(firstSize.id);
-        const firstFinish = getAvailable<AlloyFinish>(
-          allAlloys,
-          selectedAlloyDesign,
-          "finish",
-          "finishId",
-          firstSize.id,
-          "sizeId",
-        )[0];
-        if (firstFinish) {
-          setSelectedAlloyFinish(firstFinish.id);
-        }
+    // 1. Initial Size Selection
+    if (availableSizes.length > 0 && !selectedAlloySize) {
+      console.log("Setting initial size:", availableSizes[0].id);
+      setSelectedAlloySize(availableSizes[0].id);
+    }
+  }, [availableSizes, selectedAlloySize, setSelectedAlloySize]);
+
+  useEffect(() => {
+    // 2. Initial Design Selection when size changes
+    if (selectedAlloySize && availableDesigns.length > 0) {
+      const isCurrentDesignValid = availableDesigns.some(d => d.id === selectedAlloyDesign);
+      if (!isCurrentDesignValid) {
+        console.log("Setting initial design for size:", selectedAlloySize, availableDesigns[0].id);
+        setSelectedAlloyDesign(availableDesigns[0].id);
       }
     }
-  }, [
-    selectedAlloyDesign,
-    allAlloys,
-    selectedAlloySize,
-    selectedAlloyFinish,
-    setSelectedAlloySize,
-    setSelectedAlloyFinish,
-  ]);
+  }, [selectedAlloySize, availableDesigns, selectedAlloyDesign, setSelectedAlloyDesign]);
+
+  useEffect(() => {
+    // 3. Initial Finish Selection when design/size changes
+    if (selectedAlloySize && selectedAlloyDesign && availableFinishes.length > 0) {
+      const isCurrentFinishValid = availableFinishes.some(f => f.id === selectedAlloyFinish);
+      if (!isCurrentFinishValid) {
+        console.log("Setting initial finish for design:", selectedAlloyDesign, availableFinishes[0].id);
+        setSelectedAlloyFinish(availableFinishes[0].id);
+      }
+    }
+  }, [selectedAlloySize, selectedAlloyDesign, availableFinishes, selectedAlloyFinish, setSelectedAlloyFinish]);
 
   const handleSizeSelect = (sizeId: number) => {
+    console.log("Size selected:", sizeId);
     setSelectedAlloySize(sizeId);
-    const newFinishes = getAvailable<AlloyFinish>(
-      allAlloys,
-      selectedAlloyDesign,
-      "finish",
-      "finishId",
-      sizeId,
-      "sizeId",
-    );
-    const isCurrentFinishValid = newFinishes.some(
-      (f) => f.id === selectedAlloyFinish,
-    );
+  };
 
-    if (!isCurrentFinishValid && newFinishes.length > 0) {
-      setSelectedAlloyFinish(newFinishes[0].id);
-    }
+  const handleDesignSelect = (designId: number) => {
+    setSelectedAlloyDesign(designId);
   };
 
   const handleFinishSelect = (finishId: number) => {
     setSelectedAlloyFinish(finishId);
-    const newSizes = getAvailable<AlloySize>(
-      allAlloys,
-      selectedAlloyDesign,
-      "size",
-      "sizeId",
-      finishId,
-      "finishId",
-    );
-    const isCurrentSizeValid = newSizes.some((s) => s.id === selectedAlloySize);
-
-    if (!isCurrentSizeValid && newSizes.length > 0) {
-      setSelectedAlloySize(newSizes[0].id);
-    }
   };
 
   useEffect(() => {
@@ -336,29 +320,71 @@ const CarDetail = () => {
 
   const wheelImage = currentAlloyDetails?.image_url || "";
 
-  const handleDownloadImage = () => {
-    const canvas = carCanvasRef.current?.getCanvas();
-    if (canvas) {
+  const handleDownloadImage = async () => {
+    const originalCanvas = carCanvasRef.current?.getCanvas();
+    if (originalCanvas) {
       try {
-        const image = canvas.toDataURL("image/png");
+        // Create a temporary canvas to add the watermark and handle JPEG background
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = originalCanvas.width;
+        tempCanvas.height = originalCanvas.height;
+        const ctx = tempCanvas.getContext("2d");
+        
+        if (!ctx) return;
+
+        // Fill background with white (JPEG doesn't support transparency)
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+        // Draw the original car configuration
+        ctx.drawImage(originalCanvas, 0, 0);
+
+        // Add the favicon at top right as a watermark
+        const favicon = new Image();
+        favicon.crossOrigin = "anonymous";
+        favicon.src = "/favicon.png";
+        
+        await new Promise((resolve) => {
+          favicon.onload = resolve;
+          favicon.onerror = resolve; // Continue even if favicon fails
+        });
+
+        if (favicon.complete && favicon.naturalWidth !== 0) {
+          const padding = 40; // Increased padding for higher res canvas
+          const size = Math.min(tempCanvas.width, tempCanvas.height) * 0.08; // 8% of smaller dimension
+          
+          // Draw watermark
+          ctx.globalAlpha = 0.8; // Slight transparency for watermark
+          ctx.drawImage(
+            favicon, 
+            tempCanvas.width - size - padding, 
+            padding, 
+            size, 
+            size
+          );
+          ctx.globalAlpha = 1.0;
+        }
+
+        const image = tempCanvas.toDataURL("image/jpeg", 0.9);
         const link = document.createElement("a");
         link.href = image;
         link.download = `${carTitle
           .replace(/\s+/g, "-")
-          .toLowerCase()}-custom.png`;
+          .toLowerCase()}-custom.jpg`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        
         toast({
           title: "Success",
-          description: "Image downloaded successfully",
+          description: "Image downloaded successfully as JPG",
         });
       } catch (error) {
         console.error("Failed to download image:", error);
         toast({
           title: "Error",
           description:
-            "Failed to download image. The image source might be restricted.",
+            "Failed to download image. Please try again.",
           variant: "destructive",
         });
       }
@@ -405,10 +431,12 @@ const CarDetail = () => {
         allAlloys={allAlloys}
         currentAlloyDetails={currentAlloyDetails}
         availableSizes={availableSizes}
+        availableDesigns={availableDesigns}
         availableFinishes={availableFinishes}
         selectedSize={selectedAlloySize}
         selectedFinish={selectedAlloyFinish}
         onSelectSize={handleSizeSelect}
+        onSelectDesign={handleDesignSelect}
         onSelectFinish={handleFinishSelect}
       />
 
@@ -501,20 +529,24 @@ const AlloySelection = ({
   allAlloys,
   currentAlloyDetails,
   availableSizes,
+  availableDesigns,
   availableFinishes,
   selectedSize,
   selectedFinish,
   onSelectSize,
+  onSelectDesign,
   onSelectFinish,
 }: {
   carId: number;
   allAlloys: Alloy[];
   currentAlloyDetails: Alloy | null;
   availableSizes: AlloySize[];
+  availableDesigns: AlloyDesign[];
   availableFinishes: AlloyFinish[];
   selectedSize: number | null;
   selectedFinish: number | null;
   onSelectSize: (sizeId: number) => void;
+  onSelectDesign: (designId: number) => void;
   onSelectFinish: (finishId: number) => void;
 }) => (
   <div className="container mx-auto px-4 py-8">
@@ -554,7 +586,12 @@ const AlloySelection = ({
       )}
     <div className="mb-6">
       <h2 className="text-xl font-bold mb-3">Alloy Design</h2>
-      <AlloyDesignSelector carId={carId} allAlloys={allAlloys} />
+      <AlloyDesignSelector 
+        carId={carId} 
+        allAlloys={allAlloys} 
+        designs={availableDesigns}
+        onSelectDesign={onSelectDesign}
+      />
     </div>
     <div>
       <h2 className="text-xl font-bold mb-3">Alloy Finish</h2>

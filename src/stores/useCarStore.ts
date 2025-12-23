@@ -42,11 +42,18 @@ export const useCarStore = create<CarState>((set) => ({
   setSelectedModel: (model) => set({ selectedModel: model }),
   setSearchQuery: (query) => set({ searchQuery: query }),
   setSelectedColor: (color) => set({ selectedColor: color }),
-  setSelectedAlloySize: (size) => set({ selectedAlloySize: size }),
+  setSelectedAlloySize: (size) => set({ 
+    selectedAlloySize: size, 
+    selectedAlloyDesign: null, 
+    selectedAlloyFinish: null 
+  }),
   setSelectedFinish: (finish) => set({ selectedFinish: finish }),
   setCurrentCarId: (id) => set({ currentCarId: id }),
   setSelectedAlloy: (alloyId) => set({ selectedAlloy: alloyId }),
-  setSelectedAlloyDesign: (designId) => set({ selectedAlloyDesign: designId, selectedAlloyFinish: null, selectedAlloySize: null }),
+  setSelectedAlloyDesign: (designId) => set({ 
+    selectedAlloyDesign: designId, 
+    selectedAlloyFinish: null 
+  }),
   setSelectedAlloyFinish: (finishId) => set({ selectedAlloyFinish: finishId }),
   resetSelectedAlloyFinish: () => set({ selectedAlloyFinish: null }),
   resetFilters: () => set({

@@ -7,36 +7,24 @@ import { cn } from "@/lib/utils";
 interface AlloyDesignSelectorProps {
   carId: number;
   allAlloys: Alloy[];
+  designs: AlloyDesign[];
+  onSelectDesign: (designId: number) => void;
 }
 
 export const AlloyDesignSelector = ({
   allAlloys,
+  designs,
+  onSelectDesign,
 }: AlloyDesignSelectorProps) => {
-  const { selectedAlloyDesign, setSelectedAlloyDesign } = useCarStore();
-
-  const designs = useMemo(() => {
-    const designMap = new Map<number, AlloyDesign>();
-    allAlloys.forEach((alloy) => {
-      if (alloy.design) {
-        designMap.set(alloy.designId, alloy.design);
-      }
-    });
-    return Array.from(designMap.values());
-  }, [allAlloys]);
-
-  useEffect(() => {
-    if (!selectedAlloyDesign && designs.length > 0) {
-      setSelectedAlloyDesign(designs[0].id);
-    }
-  }, [selectedAlloyDesign, designs, setSelectedAlloyDesign]);
+  const { selectedAlloyDesign } = useCarStore();
 
   if (!designs || designs.length === 0) {
-    return <div>No designs available</div>;
+    return <div>No designs available for the selected size.</div>;
   }
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
-      {(designs || []).map((design) => {
+      {designs.map((design) => {
         const alloyForDesign = allAlloys.find(
           (alloy) => alloy.designId === design.id,
         );
@@ -50,7 +38,7 @@ export const AlloyDesignSelector = ({
               selectedAlloyDesign === design.id &&
                 "border-primary ring-2 ring-primary",
             )}
-            onClick={() => setSelectedAlloyDesign(design.id)}>
+            onClick={() => onSelectDesign(design.id)}>
             <CardContent className="p-2 flex flex-col items-center gap-1">
               <img
                 src={imageUrl}
