@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 
 interface SizePickerProps {
   sizes: AlloySize[];
-  selectedSize: number | null;
+  selectedDiameter: number | null;
   onSelectSize: (sizeId: number) => void;
 }
 
 export const SizePicker = ({
   sizes,
-  selectedSize,
+  selectedDiameter,
   onSelectSize,
 }: SizePickerProps) => {
   if (!sizes || sizes.length === 0) {
@@ -22,10 +22,10 @@ export const SizePicker = ({
       {sizes.map((size) => (
         <Button
           key={size.id}
-          variant={selectedSize === size.id ? "default" : "outline"}
+          variant={selectedDiameter === size.diameter ? "default" : "outline"}
           onClick={() => onSelectSize(size.id)}
           className={`h-10 min-w-[3.5rem] text-lg font-bold transition-all ${
-            selectedSize === size.id 
+            selectedDiameter === size.diameter
               ? "bg-primary text-primary-foreground shadow-md scale-105" 
               : "hover:bg-accent hover:text-accent-foreground"
           }`}

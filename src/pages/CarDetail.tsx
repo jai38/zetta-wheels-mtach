@@ -173,25 +173,50 @@ const CarDetail = () => {
     [allAlloys],
   );
 
-  const availableDesigns = useMemo(
-    () => getAvailable<AlloyDesign>(
-      allAlloys, 
-      "design", 
-      "designId", 
-      { sizeId: selectedAlloySize }
-    ),
-    [allAlloys, selectedAlloySize],
-  );
+  const uniqueDiameterSizes = useMemo(() => {
+    const unique = new Map<number, AlloySize>();
+    availableSizes.forEach((size) => {
+      if (!unique.has(size.diameter)) {
+        unique.set(size.diameter, size);
+      }
+    });
+    return Array.from(unique.values()).sort((a, b) => a.diameter - b.diameter);
+  }, [availableSizes]);
 
-  const availableFinishes = useMemo(
-    () => getAvailable<AlloyFinish>(
-      allAlloys, 
-      "finish", 
-      "finishId", 
-      { sizeId: selectedAlloySize, designId: selectedAlloyDesign }
-    ),
-    [allAlloys, selectedAlloySize, selectedAlloyDesign],
-  );
+  const selectedDiameter = useMemo(() => {
+    if (!selectedAlloySize) return null;
+    const alloy = allAlloys.find((a) => a.sizeId === selectedAlloySize);
+    return alloy?.size?.diameter ?? null;
+  }, [selectedAlloySize, allAlloys]);
+
+  const availableDesigns = useMemo(() => {
+    const filteredAlloys = selectedDiameter
+      ? allAlloys.filter((a) => a.size?.diameter === selectedDiameter)
+      : allAlloys;
+
+    return getAvailable<AlloyDesign>(
+      filteredAlloys,
+      "design",
+      "designId",
+      {},
+    );
+  }, [allAlloys, selectedDiameter]);
+
+  const availableFinishes = useMemo(() => {
+    let filteredAlloys = allAlloys;
+    if (selectedDiameter) {
+      filteredAlloys = filteredAlloys.filter(
+        (a) => a.size?.diameter === selectedDiameter,
+      );
+    }
+
+    return getAvailable<AlloyFinish>(
+      filteredAlloys,
+      "finish",
+      "finishId",
+      { designId: selectedAlloyDesign },
+    );
+  }, [allAlloys, selectedDiameter, selectedAlloyDesign]);
 
   // Debug logging for filtering
   useEffect(() => {
@@ -255,14 +280,14 @@ const CarDetail = () => {
     if (
       selectedAlloyDesign &&
       selectedAlloyFinish &&
-      selectedAlloySize &&
+      selectedDiameter &&
       allAlloys.length > 0
     ) {
       const newAlloy = allAlloys.find(
         (alloy) =>
           alloy.designId === selectedAlloyDesign &&
           alloy.finishId === selectedAlloyFinish &&
-          alloy.sizeId === selectedAlloySize,
+          alloy.size?.diameter === selectedDiameter,
       );
       setCurrentAlloyDetails(newAlloy || null);
       setSelectedAlloy(newAlloy?.id || null);
@@ -273,7 +298,7 @@ const CarDetail = () => {
   }, [
     selectedAlloyDesign,
     selectedAlloyFinish,
-    selectedAlloySize,
+    selectedDiameter,
     allAlloys,
     setSelectedAlloy,
   ]);
@@ -430,10 +455,10 @@ const CarDetail = () => {
         carId={car.id}
         allAlloys={allAlloys}
         currentAlloyDetails={currentAlloyDetails}
-        availableSizes={availableSizes}
+        availableSizes={uniqueDiameterSizes}
         availableDesigns={availableDesigns}
         availableFinishes={availableFinishes}
-        selectedSize={selectedAlloySize}
+        selectedSize={selectedDiameter}
         selectedFinish={selectedAlloyFinish}
         onSelectSize={handleSizeSelect}
         onSelectDesign={handleDesignSelect}
@@ -569,7 +594,7 @@ const AlloySelection = ({
           <div className="w-full lg:w-auto flex justify-end">
             <SizePicker
               sizes={availableSizes}
-              selectedSize={selectedSize}
+              selectedDiameter={selectedSize}
               onSelectSize={onSelectSize}
             />
           </div>
@@ -579,7 +604,7 @@ const AlloySelection = ({
         <div className="flex justify-end w-full mb-8">
             <SizePicker
                 sizes={availableSizes}
-                selectedSize={selectedSize}
+                selectedDiameter={selectedSize}
                 onSelectSize={onSelectSize}
             />
         </div>
