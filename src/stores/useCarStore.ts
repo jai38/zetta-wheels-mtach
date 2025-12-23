@@ -23,6 +23,7 @@ interface CarState {
   setSelectedAlloyDesign: (designId: number | null) => void;
   setSelectedAlloyFinish: (finishId: number | null) => void;
   resetSelectedAlloyFinish: () => void;
+  resetSelections: () => void;
   resetFilters: () => void;
 }
 
@@ -56,6 +57,12 @@ export const useCarStore = create<CarState>((set) => ({
   }),
   setSelectedAlloyFinish: (finishId) => set({ selectedAlloyFinish: finishId }),
   resetSelectedAlloyFinish: () => set({ selectedAlloyFinish: null }),
+  resetSelections: () => set({
+    selectedAlloySize: null,
+    selectedAlloyDesign: null,
+    selectedAlloyFinish: null,
+    selectedAlloy: null,
+  }),
   resetFilters: () => set({
     selectedColor: null,
     selectedAlloySize: null,

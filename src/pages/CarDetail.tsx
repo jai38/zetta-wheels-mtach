@@ -33,6 +33,7 @@ const CarDetail = () => {
     setSelectedAlloyDesign,
     setSelectedAlloySize,
     setSelectedAlloyFinish,
+    resetSelections,
   } = useCarStore();
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -53,6 +54,8 @@ const CarDetail = () => {
   // --- DATA FETCHING ---
 
   useEffect(() => {
+    resetSelections();
+
     const fetchCarAndAlloys = async () => {
       if (!id) {
         setLoading(false);
@@ -107,7 +110,7 @@ const CarDetail = () => {
       }
     };
     fetchCarAndAlloys();
-  }, [id, setCurrentCarId, navigate]);
+  }, [id, setCurrentCarId, navigate, resetSelections]);
 
   useEffect(() => {
     const fetchCarByColor = async () => {
