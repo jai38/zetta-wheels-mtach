@@ -2,9 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { carService, alloyService, type Car, type Alloy } from "@/lib/api";
 import { useCarStore } from "@/stores/useCarStore";
+import { useToast } from "@/hooks/use-toast";
 
 export const useCarData = (id: string | undefined) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { setCurrentCarId, resetSelections } = useCarStore();
   const [car, setCar] = useState<Car | null>(null);
   const [allAlloys, setAllAlloys] = useState<Alloy[]>([]);
@@ -59,9 +61,6 @@ export const useCarData = (id: string | undefined) => {
           }
         }
 
-        setCurrentCarId(carData.id);
-        setCar(carData);
-
         const alloysData = await alloyService.getAlloys({
           carId: carData.id,
           isActive: true,
@@ -70,11 +69,33 @@ export const useCarData = (id: string | undefined) => {
         console.log("Fetched alloys count:", alloysData.alloys.length);
 
         if (!isMounted) return;
+
+        if (alloysData.alloys.length === 0) {
+          const msg = "No alloys available for this car.";
+          setError(msg);
+          toast({
+            variant: "destructive",
+            title: "No Alloys Found",
+            description: "We couldn't find any alloys matching this car.",
+          });
+          // Even though we found the car, without alloys the page is invalid per requirements
+          return;
+        }
+
+        // Only set data if everything is valid
+        setCurrentCarId(carData.id);
+        setCar(carData);
         setAllAlloys(alloysData.alloys);
+
       } catch (err: any) {
         if (!isMounted) return;
         console.error("Failed to fetch car details:", err);
         setError(err.message || "Failed to load car details.");
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: err.message || "Failed to load car details.",
+        });
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -85,7 +106,7 @@ export const useCarData = (id: string | undefined) => {
     return () => {
       isMounted = false;
     };
-  }, [id, navigate, setCurrentCarId, resetSelections]);
+  }, [id, navigate, setCurrentCarId, resetSelections, toast]);
 
   const fetchCarByColor = useCallback(
     async (colorId: number) => {
@@ -107,9 +128,14 @@ export const useCarData = (id: string | undefined) => {
         }
       } catch (err) {
         console.error("Failed to fetch car by color:", err);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to update car color.",
+        });
       }
     },
-    [car?.modelId, setCurrentCarId],
+    [car?.modelId, setCurrentCarId, toast],
   );
 
   return { car, allAlloys, loading, error, fetchCarByColor };
