@@ -4,7 +4,7 @@ import { DependentSelect } from "@/components/DependentSelect";
 import { useCarStore } from "@/stores/useCarStore";
 import { carService, type Make, type CarModel } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
-import carBg from "@/assets/sport_car.png";
+import carBg from "@/assets/home-page-car.jpeg";
 
 const Index = () => {
   const { selectedMake, selectedModel, setSelectedMake, setSelectedModel } =
@@ -154,7 +154,7 @@ const Index = () => {
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.4, duration: 1.2, ease: "easeOut" }}
-        className="absolute bottom-0 right-0 z-10 w-full sm:w-[85%] lg:w-[75%] 2xl:w-[65%] pointer-events-none flex justify-end items-end">
+        className="absolute bottom-0 right-0 z-10 w-full sm:w-[100%] lg:w-[100%] 2xl:w-[75%] pointer-events-none flex justify-end items-end">
         <div className="relative w-full">
           <img
             src={carBg}
