@@ -7,7 +7,7 @@ import {
 } from "@/lib/api";
 import { useCarStore } from "@/stores/useCarStore";
 
-export const useAlloySelection = (allAlloys: Alloy[]) => {
+export const useAlloySelection = (allAlloys: Alloy[], minDiameter: number = 0) => {
   const {
     selectedAlloySize,
     selectedAlloyDesign,
@@ -107,10 +107,15 @@ export const useAlloySelection = (allAlloys: Alloy[]) => {
   // 1. Initial Size Selection
   useEffect(() => {
     if (availableSizes.length > 0 && !selectedAlloySize) {
-      console.log("Setting initial size:", availableSizes[0].id);
-      setSelectedAlloySize(availableSizes[0].id);
+      // Find first size that meets minimum diameter requirement
+      const validSize = availableSizes.find(s => s.diameter >= minDiameter) || availableSizes[0];
+      
+      if (validSize) {
+        console.log("Setting initial size:", validSize.id, "Min diameter:", minDiameter);
+        setSelectedAlloySize(validSize.id);
+      }
     }
-  }, [availableSizes, selectedAlloySize, setSelectedAlloySize]);
+  }, [availableSizes, selectedAlloySize, setSelectedAlloySize, minDiameter]);
 
   // 2. Initial Design Selection when size changes
   useEffect(() => {

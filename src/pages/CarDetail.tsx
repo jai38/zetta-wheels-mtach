@@ -38,6 +38,8 @@ const CarDetail = () => {
   // Custom Hooks
   const { car, allAlloys, loading, error, fetchCarByColor } = useCarData(id);
   
+  const minDiameter = car?.model?.defaultAlloySize || 0;
+
   const {
     uniqueDiameterSizes,
     availableDesigns,
@@ -47,7 +49,7 @@ const CarDetail = () => {
     selectedAlloyFinish,
     selectedAlloySize,
     wheelImage
-  } = useAlloySelection(allAlloys);
+  } = useAlloySelection(allAlloys, minDiameter);
 
   // Effect to handle color changes
   useEffect(() => {
@@ -205,6 +207,7 @@ const CarDetail = () => {
         onSelectSize={handleSizeSelect}
         onSelectDesign={handleDesignSelect}
         onSelectFinish={handleFinishSelect}
+        minDiameter={minDiameter}
       />
 
       <ImageViewerModal
@@ -304,6 +307,7 @@ const AlloySelection = ({
   onSelectSize,
   onSelectDesign,
   onSelectFinish,
+  minDiameter,
 }: {
   carId: number;
   allAlloys: Alloy[];
@@ -316,6 +320,7 @@ const AlloySelection = ({
   onSelectSize: (sizeId: number) => void;
   onSelectDesign: (designId: number) => void;
   onSelectFinish: (finishId: number) => void;
+  minDiameter: number;
 }) => (
   <div className="container mx-auto px-4 py-8">
       {currentAlloyDetails && (
@@ -339,6 +344,7 @@ const AlloySelection = ({
               sizes={availableSizes}
               selectedDiameter={selectedSize}
               onSelectSize={onSelectSize}
+              minDiameter={minDiameter}
             />
           </div>
         </div>
@@ -349,6 +355,7 @@ const AlloySelection = ({
                 sizes={availableSizes}
                 selectedDiameter={selectedSize}
                 onSelectSize={onSelectSize}
+                minDiameter={minDiameter}
             />
         </div>
       )}
