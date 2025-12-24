@@ -1,136 +1,70 @@
+/* Premium typography */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Premium typography */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@layer base {
+  :root {
+    /* Pure Black Theme */
+    
+    /* Background: Pure Black */
+    --background: 0 0% 0%; 
+    --foreground: 0 0% 100%;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
-All colors MUST be HSL.
-*/
+    /* Card: Very dark grey, almost black */
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
 
-:root {
-    /* Premium light theme: White, #484848 (grey), and red accent */
-    --background: 0 0% 100%;    /* White */
-    --foreground: 0 0% 28%;     /* #484848 for main text */
+    /* Popover: Dark grey */
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 100%;
 
-    --card: 0 0% 100%;          /* White */
-    --card-foreground: 0 0% 20%;/* Slightly darker grey for card text */
+    /* Primary: Bright Red */
+    --primary: 356 85% 45%; /* #D21212 approx */
+    --primary-foreground: 0 0% 100%;
 
-    --popover: 0 0% 100%;       /* White */
-    --popover-foreground: 0 0% 20%;
+    /* Secondary: Dark grey for inputs/borders */
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
 
-    --primary: 0 80% 45%;       /* Deep red accent */
-    --primary-foreground: 0 0% 100%; /* White text on red */
+    /* Muted */
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
 
-    --secondary: 0 0% 95%;      /* Very light grey for subtle backgrounds */
-    --secondary-foreground: 0 0% 28%; /* #484848 */
+    /* Accent */
+    --accent: 356 85% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --muted: 0 0% 90%;          /* Light grey for disabled/muted elements */
-    --muted-foreground: 0 0% 50%; /* Medium grey for muted text */
-
-    --accent: 0 80% 45%;        /* Same as primary red */
-    --accent-foreground: 0 0% 100%; /* White text on red */
-
-    --destructive: 0 80% 45%;   /* Red for destructive actions */
+    /* Destructive */
+    --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 85%;         /* Light grey border */
-    --input: 0 0% 85%;          /* Light grey input border */
-    --ring: 0 80% 45%;          /* Red focus ring */
+    /* Borders */
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 356 85% 45%;
 
-    --radius: 1rem;
+    --radius: 0.25rem; /* Sharper corners as requested */
 
-    /* Shadows for light theme */
-    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.1);
-    --shadow-elevated: 0 10px 40px -8px hsl(0 0% 0% / 0.15);
-    --shadow-premium: 0 20px 60px -12px hsl(0 0% 0% / 0.2);
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px rgba(0, 0, 0, 0.8);
+    --shadow-elevated: 0 10px 40px -8px rgba(0, 0, 0, 0.9);
+    --shadow-premium: 0 20px 60px -12px rgba(0, 0, 0, 1);
 
     /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-
-    /* Sidebar colors for light theme */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 28%;
-    --sidebar-primary: 0 80% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 95%;
-    --sidebar-accent-foreground: 0 0% 28%;
-    --sidebar-border: 0 0% 85%;
-    --sidebar-ring: 0 80% 45%;
-
-    /* Header/Footer specific color */
-    --header-footer-background: 0 0% 28%; /* #484848 */
-    --header-footer-foreground: 0 0% 100%; /* White */
-  }
-
-  .dark { /* Mirroring light theme for now, or could define a separate dark mode */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 28%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 20%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
-    --primary: 0 80% 45%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 0 0% 28%;
-    --muted: 0 0% 90%;
-    --muted-foreground: 0 0% 50%;
-    --accent: 0 80% 45%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 80% 45%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 85%;
-    --input: 0 0% 85%;
-    --ring: 0 80% 45%;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 28%;
-    --sidebar-primary: 0 80% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 95%;
-    --sidebar-accent-foreground: 0 0% 28%;
-    --sidebar-border: 0 0% 85%;
-    --sidebar-ring: 0 80% 45%;
-    --header-footer-background: 0 0% 28%;
-    --header-footer-foreground: 0 0% 100%;
-  }
-
-@layer base {
-  * {
-    @apply border-border;
+    --transition-smooth: all 0.2s ease-in-out;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
+    background-color: black;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 600;
-  }
-}
-
-@layer utilities {
-  .shadow-soft {
-    box-shadow: var(--shadow-soft);
-  }
-
-  .shadow-elevated {
-    box-shadow: var(--shadow-elevated);
-  }
-
-  .shadow-premium {
-    box-shadow: var(--shadow-premium);
-  }
-
-  .transition-smooth {
-    transition: var(--transition-smooth);
-  }
-
-  .transition-spring {
-    transition: var(--transition-spring);
+    font-family: 'Inter', sans-serif; /* Changed to Inter for modern bold look per design */
+    font-weight: 700;
   }
 }

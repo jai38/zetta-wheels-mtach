@@ -1,7 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { type Car, type Alloy, type AlloySize, type AlloyDesign, type AlloyFinish } from "@/lib/api";
+import {
+  type Car,
+  type Alloy,
+  type AlloySize,
+  type AlloyDesign,
+  type AlloyFinish,
+} from "@/lib/api";
 import { useCarStore } from "@/stores/useCarStore";
 import { ColorPicker } from "@/components/ColorPicker";
 import AlloyDesignSelector from "@/components/AlloyDesignSelector";
@@ -15,6 +21,7 @@ import SizePicker from "@/components/SizePicker";
 import carBackground from "@/assets/car_background.png";
 import { useCarData } from "@/hooks/useCarData";
 import { useAlloySelection } from "@/hooks/useAlloySelection";
+import logo from "@/assets/logo-black-text.png";
 
 const CarDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,7 +44,7 @@ const CarDetail = () => {
 
   // Custom Hooks
   const { car, allAlloys, loading, error, fetchCarByColor } = useCarData(id);
-  
+
   const minDiameter = car?.model?.defaultAlloySize || 0;
 
   const {
@@ -48,7 +55,7 @@ const CarDetail = () => {
     selectedDiameter,
     selectedAlloyFinish,
     selectedAlloySize,
-    wheelImage
+    wheelImage,
   } = useAlloySelection(allAlloys, minDiameter);
 
   // Effect to handle color changes
@@ -86,44 +93,56 @@ const CarDetail = () => {
         tempCanvas.width = originalCanvas.width;
         tempCanvas.height = originalCanvas.height;
         const ctx = tempCanvas.getContext("2d");
-        
+
         if (!ctx) return;
 
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
         ctx.drawImage(originalCanvas, 0, 0);
 
-        const favicon = new Image();
-        favicon.crossOrigin = "anonymous";
-        favicon.src = "/favicon.png";
-        
+        // Load and draw logo image
+        const logoImg = new Image();
+        logoImg.src = logo;
         await new Promise((resolve) => {
-          favicon.onload = resolve;
-          favicon.onerror = resolve;
+          logoImg.onload = resolve;
         });
 
-        if (favicon.complete && favicon.naturalWidth !== 0) {
-          const padding = 40;
-          const size = Math.min(tempCanvas.width, tempCanvas.height) * 0.08;
-          ctx.globalAlpha = 0.8;
-          ctx.drawImage(
-            favicon, 
-            tempCanvas.width - size - padding, 
-            padding, 
-            size, 
-            size
-          );
-          ctx.globalAlpha = 1.0;
+        const padding = 40;
+        const maxSize = Math.min(tempCanvas.width, tempCanvas.height) * 0.2; // Increased max size for visibility
+
+        // Calculate aspect ratio
+        const logoAspectRatio = logoImg.width / logoImg.height;
+        let logoWidth = maxSize;
+        let logoHeight = maxSize;
+
+        if (logoAspectRatio > 1) {
+          // Wider than tall
+          logoHeight = maxSize / logoAspectRatio;
+        } else {
+          // Taller than wide
+          logoWidth = maxSize * logoAspectRatio;
         }
+
+        ctx.globalAlpha = 1.0; // Ensure full opacity
+        ctx.drawImage(
+          logoImg,
+          tempCanvas.width - logoWidth - padding,
+          padding * 0.1, // Reduced padding by 20% to move logo up
+          logoWidth,
+          logoHeight,
+        );
+        ctx.globalAlpha = 1.0;
 
         const image = tempCanvas.toDataURL("image/jpeg", 0.9);
         const link = document.createElement("a");
         link.href = image;
-        link.download = `${carTitle.replace(/\s+/g, "-").toLowerCase()}-custom.jpg`;
+        link.download = `${carTitle
+          .replace(/\s+/g, "-")
+          .toLowerCase()}-custom.jpg`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         toast({
           title: "Success",
           description: "Image downloaded successfully as JPG",
@@ -257,7 +276,7 @@ const CarDisplay = ({
   handleDownloadImage: () => void;
 }) => {
   console.log("Rendering CarDisplay:", { carImageUrl, wheelImage });
-  
+
   if (!carImageUrl) {
     return (
       <div className="w-full relative flex items-center justify-center min-h-[400px] bg-muted rounded-lg">
@@ -323,47 +342,46 @@ const AlloySelection = ({
   minDiameter: number;
 }) => (
   <div className="container mx-auto px-4 py-8">
-      {currentAlloyDetails && (
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center w-full mb-8 gap-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
-            <div className="text-3xl font-semibold">
-              {currentAlloyDetails.alloyName}
-            </div>
-             {currentAlloyDetails.buy_url && (
-              <Button
-                onClick={() => window.open(currentAlloyDetails.buy_url, "_blank")}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2 h-10 shadow-sm"
-              >
-                Buy Now
-              </Button>
-            )}
+    {currentAlloyDetails && (
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center w-full mb-8 gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
+          <div className="text-3xl font-semibold">
+            {currentAlloyDetails.alloyName}
           </div>
-          
-          <div className="w-full lg:w-auto flex justify-end">
-            <SizePicker
-              sizes={availableSizes}
-              selectedDiameter={selectedSize}
-              onSelectSize={onSelectSize}
-              minDiameter={minDiameter}
-            />
-          </div>
+          {currentAlloyDetails.buy_url && (
+            <Button
+              onClick={() => window.open(currentAlloyDetails.buy_url, "_blank")}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2 h-10 shadow-sm">
+              Buy Now
+            </Button>
+          )}
         </div>
-      )}
-      {!currentAlloyDetails && (
-        <div className="flex justify-end w-full mb-8">
-            <SizePicker
-                sizes={availableSizes}
-                selectedDiameter={selectedSize}
-                onSelectSize={onSelectSize}
-                minDiameter={minDiameter}
-            />
+
+        <div className="w-full lg:w-auto flex justify-end">
+          <SizePicker
+            sizes={availableSizes}
+            selectedDiameter={selectedSize}
+            onSelectSize={onSelectSize}
+            minDiameter={minDiameter}
+          />
         </div>
-      )}
+      </div>
+    )}
+    {!currentAlloyDetails && (
+      <div className="flex justify-end w-full mb-8">
+        <SizePicker
+          sizes={availableSizes}
+          selectedDiameter={selectedSize}
+          onSelectSize={onSelectSize}
+          minDiameter={minDiameter}
+        />
+      </div>
+    )}
     <div className="mb-6">
       <h2 className="text-xl font-bold mb-3">Alloy Design</h2>
-      <AlloyDesignSelector 
-        carId={carId} 
-        allAlloys={allAlloys} 
+      <AlloyDesignSelector
+        carId={carId}
+        allAlloys={allAlloys}
         designs={availableDesigns}
         onSelectDesign={onSelectDesign}
       />

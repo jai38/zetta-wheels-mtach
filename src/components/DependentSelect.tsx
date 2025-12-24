@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 interface Option {
   id: string;
@@ -26,13 +26,13 @@ export const DependentSelect = ({
 
   return (
     <Listbox value={value} onChange={onChange} disabled={disabled}>
-      <div className="relative">
-        <Listbox.Button className="relative w-full cursor-pointer rounded-2xl bg-secondary py-3 pl-4 pr-10 text-left transition-smooth hover:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-50">
-          <span className="block truncate text-foreground">
+      <div className="relative w-full">
+        <Listbox.Button className="relative w-full cursor-pointer bg-black/50 border border-white/20 py-4 pl-4 pr-10 text-left transition-colors hover:border-white/40 focus:border-white/60 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 min-w-[280px]">
+          <span className={`block truncate text-base font-medium ${selected ? 'text-white' : 'text-white/70'}`}>
             {selected ? selected.name : placeholder}
           </span>
-          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+            <ChevronDown className="h-4 w-4 text-white/70" />
           </span>
         </Listbox.Button>
 
@@ -42,28 +42,21 @@ export const DependentSelect = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-2xl bg-popover py-2 shadow-elevated focus:outline-none">
+          <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto bg-black border border-white/20 py-1 shadow-lg focus:outline-none">
             {options.map((option) => (
               <Listbox.Option
                 key={option.id}
                 value={option.id}
                 className={({ active }) =>
-                  `relative cursor-pointer select-none py-3 pl-10 pr-4 transition-smooth ${
-                    active ? 'bg-accent/10 text-accent-foreground' : 'text-popover-foreground'
+                  `relative cursor-pointer select-none py-3 pl-4 pr-4 transition-colors ${
+                    active ? 'bg-white/10 text-white' : 'text-white/80'
                   }`
                 }
               >
                 {({ selected }) => (
-                  <>
-                    <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                      {option.name}
-                    </span>
-                    {selected && (
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-accent">
-                        <Check className="h-5 w-5" />
-                      </span>
-                    )}
-                  </>
+                  <span className={`block truncate ${selected ? 'font-bold text-white' : 'font-normal'}`}>
+                    {option.name}
+                  </span>
                 )}
               </Listbox.Option>
             ))}
