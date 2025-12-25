@@ -87,14 +87,15 @@ export const useCarData = (id: string | undefined) => {
         setCar(carData);
         setAllAlloys(alloysData.alloys);
 
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!isMounted) return;
         console.error("Failed to fetch car details:", err);
-        setError(err.message || "Failed to load car details.");
+        const errorMessage = err instanceof Error ? err.message : "Failed to load car details.";
+        setError(errorMessage);
         toast({
             variant: "destructive",
             title: "Error",
-            description: err.message || "Failed to load car details.",
+            description: errorMessage,
         });
       } finally {
         if (isMounted) setLoading(false);

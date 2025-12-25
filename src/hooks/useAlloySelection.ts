@@ -32,11 +32,14 @@ export const useAlloySelection = (allAlloys: Alloy[], minDiameter: number = 0) =
         // Check all dependencies
         return Object.entries(dependencies).every(([key, value]) => {
           if (!value) return true; // Optional dependency
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           return (alloy as any)[key] === value;
         });
       })
       .forEach((alloy) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const item = (alloy as any)[filterKey];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const id = (alloy as any)[idKey];
         if (item && id) {
           itemMap.set(id, item as T);

@@ -5,9 +5,7 @@ import {
   DialogContent,
   DialogPortal,
   DialogOverlay,
-  DialogClose,
 } from "@/components/ui/dialog";
-import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ImageViewerModalProps {

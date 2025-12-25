@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import React from "react";
 import { type Alloy, type AlloyDesign } from "@/lib/api";
 import { useCarStore } from "@/stores/useCarStore";
 import { Card, CardContent } from "@/components/ui/card";

@@ -1,27 +1,17 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Maximize2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  type Car,
-  type Alloy,
-  type AlloySize,
-  type AlloyDesign,
-  type AlloyFinish,
-} from "@/lib/api";
 import { useCarStore } from "@/stores/useCarStore";
-import { ColorPicker } from "@/components/ColorPicker";
-import AlloyDesignSelector from "@/components/AlloyDesignSelector";
-import AlloyFinishSelector from "@/components/AlloyFinishSelector";
-import CarCanvas, { CarCanvasRef } from "@/components/CarCanvas";
+import { CarCanvasRef } from "@/components/CarCanvas";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageViewerModal } from "@/components/ImageViewerModal";
-import { cn } from "@/lib/utils";
-import SizePicker from "@/components/SizePicker";
 import carBackground from "@/assets/car_background.png";
 import { useCarData } from "@/hooks/useCarData";
 import { useAlloySelection } from "@/hooks/useAlloySelection";
+import { CarHeader } from "@/components/car-detail/CarHeader";
+import { CarDisplay } from "@/components/car-detail/CarDisplay";
+import { AlloySelection } from "@/components/car-detail/AlloySelection";
 import logo from "@/assets/logo-black-text.png";
 
 const CarDetail = () => {
@@ -41,10 +31,9 @@ const CarDetail = () => {
   // Local UI State
   const [showImageViewerModal, setShowImageViewerModal] = useState(false);
   const [imageViewerUrl, setImageViewerUrl] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<number | null>(null);
 
   // Custom Hooks
-  const { car, allAlloys, loading, error, fetchCarByColor } = useCarData(id);
+  const { car, allAlloys, loading, error } = useCarData(id);
 
   const minDiameter = car?.model?.defaultAlloySize || 0;
 
@@ -55,16 +44,8 @@ const CarDetail = () => {
     currentAlloyDetails,
     selectedDiameter,
     selectedAlloyFinish,
-    selectedAlloySize,
     wheelImage,
   } = useAlloySelection(allAlloys, minDiameter);
-
-  // Effect to handle color changes
-  useEffect(() => {
-    if (selectedColor) {
-      fetchCarByColor(selectedColor);
-    }
-  }, [selectedColor, fetchCarByColor]);
 
   // Derived Values
   const carImageUrl = car?.carImage || "";
@@ -222,8 +203,6 @@ const CarDetail = () => {
         <div className="relative z-10 w-full container mx-auto px-4 py-4">
           <CarHeader
             carTitle={carTitle}
-            car={car}
-            setSelectedColor={setSelectedColor}
           />
           <CarDisplay
             car={car}
@@ -263,197 +242,3 @@ const CarDetail = () => {
 };
 
 export default CarDetail;
-
-// Helper Components
-const CarHeader = ({
-  carTitle,
-  car,
-  setSelectedColor,
-}: {
-  carTitle: string;
-  car: Car;
-  setSelectedColor: (color: number) => void;
-}) => (
-  <div className="flex flex-row justify-between items-center m-1 sm:m-2 gap-2">
-    <h1 className="text-xl sm:text-4xl font-bold text-black truncate flex-1">{carTitle}</h1>
-    {/* <div className="flex flex-col sm:flex-row gap-4">
-      <ColorPicker car={car} onColorChange={setSelectedColor} />
-    </div> */}
-  </div>
-);
-
-const CarDisplay = ({
-  car,
-  carImageUrl,
-  isMobile,
-  handleCanvasClick,
-  carCanvasRef,
-  wheelImage,
-  handleDownloadImage,
-  handleShare,
-}: {
-  car: Car;
-  carImageUrl: string;
-  isMobile: boolean;
-  handleCanvasClick: () => void;
-  carCanvasRef: React.RefObject<CarCanvasRef>;
-  wheelImage: string;
-  handleDownloadImage: () => void;
-  handleShare: () => void;
-}) => {
-  console.log("Rendering CarDisplay:", { carImageUrl, wheelImage });
-
-  if (!carImageUrl) {
-    return (
-      <div className="w-full relative flex items-center justify-center min-h-[400px] bg-muted rounded-lg">
-        <p className="text-muted-foreground">No car image available</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-full relative">
-      <div
-        className={cn("relative", isMobile && "cursor-pointer")}
-        onClick={handleCanvasClick}>
-        <CarCanvas
-          ref={carCanvasRef}
-          carImage={carImageUrl}
-          wheelImage={wheelImage}
-          x_front={car.x_front ?? 0}
-          y_front={car.y_front ?? 0}
-          x_rear={car.x_rear ?? 0}
-          y_rear={car.y_rear ?? 0}
-          wheelSize={car.wheelSize}
-        />
-        <Button
-          onClick={handleShare}
-          variant="ghost"
-          size="icon"
-          className="absolute bottom-1 right-[5.5rem] h-8 w-8 sm:h-10 sm:w-10 sm:bottom-4 sm:right-28 bg-transparent hover:bg-transparent hover:text-primary"
-          aria-label="Share Configuration">
-          <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
-        </Button>
-        <Button
-          onClick={handleCanvasClick}
-          variant="ghost"
-          size="icon"
-          className="absolute bottom-1 right-12 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-4 sm:right-16 bg-transparent hover:bg-transparent hover:text-primary"
-          aria-label="Zoom Image">
-          <Maximize2 className="h-4 w-4 sm:h-5 sm:w-5" />
-        </Button>
-        <Button
-          onClick={handleDownloadImage}
-          disabled={!car}
-          variant="ghost"
-          size="icon"
-          className="absolute bottom-1 right-2 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-4 sm:right-4 bg-transparent hover:bg-transparent hover:text-primary"
-          aria-label="Download Car Image">
-          <DownloadIcon />
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-const AlloySelection = ({
-  carId,
-  allAlloys,
-  currentAlloyDetails,
-  availableSizes,
-  availableDesigns,
-  availableFinishes,
-  selectedSize,
-  selectedFinish,
-  onSelectSize,
-  onSelectDesign,
-  onSelectFinish,
-  minDiameter,
-}: {
-  carId: number;
-  allAlloys: Alloy[];
-  currentAlloyDetails: Alloy | null;
-  availableSizes: AlloySize[];
-  availableDesigns: AlloyDesign[];
-  availableFinishes: AlloyFinish[];
-  selectedSize: number | null;
-  selectedFinish: number | null;
-  onSelectSize: (sizeId: number) => void;
-  onSelectDesign: (designId: number) => void;
-  onSelectFinish: (finishId: number) => void;
-  minDiameter: number;
-}) => (
-  <div className="container mx-auto px-4 py-8">
-    {currentAlloyDetails && (
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center w-full mb-8 gap-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
-          <div className="text-3xl font-semibold">
-            {currentAlloyDetails.alloyName}
-          </div>
-          {currentAlloyDetails.buy_url && (
-            <Button
-              onClick={() => window.open(currentAlloyDetails.buy_url, "_blank")}
-              className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2 h-10 shadow-sm">
-              Buy Now
-            </Button>
-          )}
-        </div>
-
-        <div className="w-full lg:w-auto flex justify-end">
-          <SizePicker
-            sizes={availableSizes}
-            selectedDiameter={selectedSize}
-            onSelectSize={onSelectSize}
-            minDiameter={minDiameter}
-          />
-        </div>
-      </div>
-    )}
-    {!currentAlloyDetails && (
-      <div className="flex justify-end w-full mb-8">
-        <SizePicker
-          sizes={availableSizes}
-          selectedDiameter={selectedSize}
-          onSelectSize={onSelectSize}
-          minDiameter={minDiameter}
-        />
-      </div>
-    )}
-    <div className="mb-6">
-      <h2 className="text-xl font-bold mb-3">Alloy Design</h2>
-      <AlloyDesignSelector
-        carId={carId}
-        allAlloys={allAlloys}
-        designs={availableDesigns}
-        onSelectDesign={onSelectDesign}
-      />
-    </div>
-    <div>
-      <h2 className="text-xl font-bold mb-3">Alloy Finish</h2>
-      <AlloyFinishSelector
-        finishes={availableFinishes}
-        selectedFinish={selectedFinish}
-        onSelectFinish={onSelectFinish}
-        allAlloys={allAlloys}
-      />
-    </div>
-  </div>
-);
-
-const DownloadIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="lucide lucide-download">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-    <polyline points="7 10 12 15 17 10" />
-    <line x1="12" x2="12" y1="15" y2="3" />
-  </svg>
-);
