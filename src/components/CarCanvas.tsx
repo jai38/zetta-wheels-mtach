@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useImperativeHandle } from "react";
+import React, { useRef, useEffect, useImperativeHandle, useState } from "react";
+import { Loader } from "lucide-react";
 
 interface CarCanvasProps {
   carImage: string;
@@ -28,17 +29,25 @@ const CarCanvas = React.forwardRef<CarCanvasRef, CarCanvasProps>(
     ref,
   ) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useImperativeHandle(ref, () => ({
       getCanvas: () => canvasRef.current,
     }));
 
     useEffect(() => {
+      setIsLoading(true);
       const canvas = canvasRef.current;
-      if (!canvas || !carImage) return;
+      if (!canvas || !carImage) {
+        setIsLoading(false);
+        return;
+      }
 
       const context = canvas.getContext("2d");
-      if (!context) return;
+      if (!context) {
+        setIsLoading(false);
+        return;
+      }
 
       let isMounted = true;
 
@@ -97,6 +106,8 @@ const CarCanvas = React.forwardRef<CarCanvasRef, CarCanvasProps>(
           }
         } catch (error) {
           console.error("CarCanvas: Error loading images:", error);
+        } finally {
+          if (isMounted) setIsLoading(false);
         }
       };
 
@@ -107,7 +118,16 @@ const CarCanvas = React.forwardRef<CarCanvasRef, CarCanvasProps>(
       };
     }, [carImage, wheelImage, x_front, y_front, x_rear, y_rear, wheelSize]);
 
-    return <canvas ref={canvasRef} style={{ width: "100%", height: "auto" }} />;
+    return (
+      <div className="relative w-full h-auto">
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm z-10 rounded-lg">
+            <Loader className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        )}
+        <canvas ref={canvasRef} style={{ width: "100%", height: "auto" }} />
+      </div>
+    );
   },
 );
 

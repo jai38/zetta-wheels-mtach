@@ -4,7 +4,8 @@ import { DependentSelect } from "@/components/DependentSelect";
 import { useCarStore } from "@/stores/useCarStore";
 import { carService, type Make, type CarModel } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
-import carBg from "@/assets/home-page-car.jpeg";
+import carBg from "@/assets/home-page-car.png";
+import logo from "@/assets/logo-wob.png";
 
 const Index = () => {
   const { selectedMake, selectedModel, setSelectedMake, setSelectedModel } =
@@ -91,29 +92,37 @@ const Index = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-black overflow-hidden flex flex-col items-center">
-      {/* Main Content Container - Flex grow to push car to bottom if necessary, or just absolute */}
-      <div className="flex-grow flex flex-col items-center justify-center w-full z-30 pt-20">
+    <div className="relative h-screen w-full bg-black overflow-hidden flex flex-col items-center">
+      {/* Main Content Container */}
+      <div className="flex-grow flex flex-col items-center w-full z-40 pt-8 sm:pt-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-4xl px-6 flex flex-col items-center text-center sm:-mt-20">
-          <h1 className="text-5xl sm:text-7xl font-bold text-white mb-4 tracking-tight">
+          className="w-full max-w-4xl px-6 flex flex-col items-center text-center">
+          
+          {/* Logo */}
+          <img 
+            src={logo} 
+            alt="Neo Wheels" 
+            className="h-20 sm:h-28 mb-6 object-contain"
+          />
+
+          <h1 className="text-4xl sm:text-6xl font-bold text-white mb-2 tracking-tight uppercase">
             Wheel Match
           </h1>
-          <p className="text-white/60 text-lg sm:text-xl font-light mb-12">
+          <p className="text-white/60 text-lg sm:text-xl font-light mb-8">
             Find the Perfect Alloy Wheels for Your Car
           </p>
 
           {error && (
-            <div className="mb-6 p-3 text-red-500 bg-red-500/10 border border-red-500/20 rounded text-sm">
+            <div className="mb-4 p-3 text-red-500 bg-red-500/10 border border-red-500/20 rounded text-sm">
               {error}
             </div>
           )}
 
-          <div className="w-full max-w-2xl flex flex-col gap-6">
-            <div className="flex flex-col sm:flex-row gap-4 w-full">
+          <div className="w-full max-w-2xl flex flex-col gap-6 relative z-50">
+            <div className="flex flex-col md:flex-row gap-4 w-full">
               <div className="w-full">
                 <DependentSelect
                   options={makes.map((m) => ({
@@ -149,20 +158,21 @@ const Index = () => {
         </motion.div>
       </div>
 
-      {/* Car Image with Floor - Grounded to Bottom Right */}
+      {/* Car Image - Absolute at Right Bottom to prevent scrolling */}
       <motion.div
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.4, duration: 1.2, ease: "easeOut" }}
-        className="absolute bottom-0 right-0 z-10 w-full sm:w-[100%] lg:w-[100%] 2xl:w-[75%] pointer-events-none flex justify-end items-end">
-        <div className="relative w-full">
+        className="absolute bottom-10 md:bottom-0 right-0 z-10 pointer-events-none flex justify-end items-end w-full">
+        <div className="relative w-full flex justify-end items-end">
           <img
             src={carBg}
             alt="Sports Car"
-            className="w-full h-auto object-contain block"
+            className="w-[100vw] h-[45vh] sm:w-[90vw] sm:h-[60vh] lg:w-[80vw] lg:h-[70vh] object-contain object-right-bottom block"
           />
-          {/* Subtle gradient to blend the left side of the car/floor image into the black background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent sm:w-1/3 h-full"></div>
+          {/* Gradients for smoother integration */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent w-full sm:w-1/2 h-full"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent"></div>
         </div>
       </motion.div>
     </div>

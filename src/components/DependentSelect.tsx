@@ -27,7 +27,7 @@ export const DependentSelect = ({
   return (
     <Listbox value={value} onChange={onChange} disabled={disabled}>
       <div className="relative w-full">
-        <Listbox.Button className="relative w-full cursor-pointer bg-black/50 border border-white/20 py-4 pl-4 pr-10 text-left transition-colors hover:border-white/40 focus:border-white/60 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 min-w-[280px]">
+        <Listbox.Button className="relative w-full cursor-pointer bg-zinc-800/50 border border-white/20 py-4 pl-4 pr-10 text-left transition-colors hover:border-white/40 focus:border-white/60 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50">
           <span className={`block truncate text-base font-medium ${selected ? 'text-white' : 'text-white/70'}`}>
             {selected ? selected.name : placeholder}
           </span>
@@ -42,7 +42,7 @@ export const DependentSelect = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto bg-black border border-white/20 py-1 shadow-lg focus:outline-none">
+          <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto bg-zinc-900 border border-white/20 py-1 shadow-lg focus:outline-none">
             {options.map((option) => (
               <Listbox.Option
                 key={option.id}

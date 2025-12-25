@@ -15,11 +15,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      <Header />
+      {!isHomePage && <Header />}
       <main 
         className={cn(
           "flex-grow w-full",
-          !isHomePage && "pt-24 sm:pt-32" // Add padding for header on non-home pages
+          !isHomePage && "pt-20 sm:pt-28" // Add padding for header on non-home pages
         )}
       >
         {children}

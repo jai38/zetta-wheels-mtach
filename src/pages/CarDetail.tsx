@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Maximize2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   type Car,
@@ -158,9 +159,34 @@ const CarDetail = () => {
     }
   }, [carTitle, toast]);
 
-  const handleCanvasClick = () => {
-    // Placeholder for future interactivity
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Check out this ${carTitle} with custom alloys!`,
+          text: `I found these perfect alloy wheels for the ${carTitle} on Wheel Match.`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link Copied",
+        description: "Link copied to clipboard",
+      });
+    }
   };
+
+  const handleCanvasClick = useCallback(() => {
+    const canvas = carCanvasRef.current?.getCanvas();
+    if (canvas) {
+      const dataUrl = canvas.toDataURL("image/png");
+      setImageViewerUrl(dataUrl);
+      setShowImageViewerModal(true);
+    }
+  }, []);
 
   // --- RENDER ---
 
@@ -187,14 +213,6 @@ const CarDetail = () => {
 
   return (
     <>
-      <div className="w-full container mx-auto px-4 py-4">
-        <CarHeader
-          carTitle={carTitle}
-          car={car}
-          setSelectedColor={setSelectedColor}
-        />
-      </div>
-
       <div className="relative w-full overflow-hidden bg-muted/30">
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
@@ -202,6 +220,11 @@ const CarDetail = () => {
         />
 
         <div className="relative z-10 w-full container mx-auto px-4 py-4">
+          <CarHeader
+            carTitle={carTitle}
+            car={car}
+            setSelectedColor={setSelectedColor}
+          />
           <CarDisplay
             car={car}
             carImageUrl={carImageUrl}
@@ -210,6 +233,7 @@ const CarDetail = () => {
             carCanvasRef={carCanvasRef}
             wheelImage={wheelImage}
             handleDownloadImage={handleDownloadImage}
+            handleShare={handleShare}
           />
         </div>
       </div>
@@ -250,11 +274,11 @@ const CarHeader = ({
   car: Car;
   setSelectedColor: (color: number) => void;
 }) => (
-  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center m-2 sm:m-4 gap-4">
-    <h1 className="text-2xl sm:text-3xl font-bold">{carTitle}</h1>
-    <div className="flex flex-col sm:flex-row gap-4">
+  <div className="flex flex-row justify-between items-center m-1 sm:m-2 gap-2">
+    <h1 className="text-xl sm:text-4xl font-bold text-black truncate flex-1">{carTitle}</h1>
+    {/* <div className="flex flex-col sm:flex-row gap-4">
       <ColorPicker car={car} onColorChange={setSelectedColor} />
-    </div>
+    </div> */}
   </div>
 );
 
@@ -266,6 +290,7 @@ const CarDisplay = ({
   carCanvasRef,
   wheelImage,
   handleDownloadImage,
+  handleShare,
 }: {
   car: Car;
   carImageUrl: string;
@@ -274,6 +299,7 @@ const CarDisplay = ({
   carCanvasRef: React.RefObject<CarCanvasRef>;
   wheelImage: string;
   handleDownloadImage: () => void;
+  handleShare: () => void;
 }) => {
   console.log("Rendering CarDisplay:", { carImageUrl, wheelImage });
 
@@ -301,11 +327,27 @@ const CarDisplay = ({
           wheelSize={car.wheelSize}
         />
         <Button
+          onClick={handleShare}
+          variant="ghost"
+          size="icon"
+          className="absolute bottom-1 right-[5.5rem] h-8 w-8 sm:h-10 sm:w-10 sm:bottom-4 sm:right-28 bg-transparent hover:bg-transparent hover:text-primary"
+          aria-label="Share Configuration">
+          <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
+        </Button>
+        <Button
+          onClick={handleCanvasClick}
+          variant="ghost"
+          size="icon"
+          className="absolute bottom-1 right-12 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-4 sm:right-16 bg-transparent hover:bg-transparent hover:text-primary"
+          aria-label="Zoom Image">
+          <Maximize2 className="h-4 w-4 sm:h-5 sm:w-5" />
+        </Button>
+        <Button
           onClick={handleDownloadImage}
           disabled={!car}
-          variant="outline"
+          variant="ghost"
           size="icon"
-          className="absolute bottom-4 right-4"
+          className="absolute bottom-1 right-2 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-4 sm:right-4 bg-transparent hover:bg-transparent hover:text-primary"
           aria-label="Download Car Image">
           <DownloadIcon />
         </Button>
