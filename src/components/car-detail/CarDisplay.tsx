@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Share2, Maximize2 } from "lucide-react";
+import { Maximize2 } from "lucide-react";
 import CarCanvas, { CarCanvasRef } from "@/components/CarCanvas";
 import { DownloadIcon } from "@/components/icons/DownloadIcon";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,6 @@ interface CarDisplayProps {
   carCanvasRef: React.RefObject<CarCanvasRef>;
   wheelImage: string;
   handleDownloadImage: () => void;
-  handleShare: () => void;
 }
 
 export const CarDisplay: React.FC<CarDisplayProps> = ({
@@ -25,7 +24,6 @@ export const CarDisplay: React.FC<CarDisplayProps> = ({
   carCanvasRef,
   wheelImage,
   handleDownloadImage,
-  handleShare,
 }) => {
   // console.log("Rendering CarDisplay:", { carImageUrl, wheelImage }); // Removed log for cleanliness
 
@@ -41,7 +39,7 @@ export const CarDisplay: React.FC<CarDisplayProps> = ({
     <div className="w-full relative">
       <div
         className={cn("relative", isMobile && "cursor-pointer")}
-        onClick={handleCanvasClick}
+        onClick={isMobile ? handleCanvasClick : undefined}
       >
         <CarCanvas
           ref={carCanvasRef}
@@ -54,16 +52,10 @@ export const CarDisplay: React.FC<CarDisplayProps> = ({
           wheelSize={car.wheelSize}
         />
         <Button
-          onClick={handleShare}
-          variant="ghost"
-          size="icon"
-          className="absolute bottom-1 right-[5.5rem] h-8 w-8 sm:h-10 sm:w-10 sm:bottom-4 sm:right-28 bg-transparent hover:bg-transparent hover:text-primary"
-          aria-label="Share Configuration"
-        >
-          <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
-        </Button>
-        <Button
-          onClick={handleCanvasClick}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCanvasClick();
+          }}
           variant="ghost"
           size="icon"
           className="absolute bottom-1 right-12 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-4 sm:right-16 bg-transparent hover:bg-transparent hover:text-primary"
@@ -72,7 +64,10 @@ export const CarDisplay: React.FC<CarDisplayProps> = ({
           <Maximize2 className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
         <Button
-          onClick={handleDownloadImage}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDownloadImage();
+          }}
           disabled={!car}
           variant="ghost"
           size="icon"

@@ -140,32 +140,62 @@ const CarDetail = () => {
     }
   }, [carTitle, toast]);
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Check out this ${carTitle} with custom alloys!`,
-          text: `I found these perfect alloy wheels for the ${carTitle} on Wheel Match.`,
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast({
-        title: "Link Copied",
-        description: "Link copied to clipboard",
-      });
-    }
-  };
 
-  const handleCanvasClick = useCallback(() => {
-    const canvas = carCanvasRef.current?.getCanvas();
-    if (canvas) {
-      const dataUrl = canvas.toDataURL("image/png");
-      setImageViewerUrl(dataUrl);
-      setShowImageViewerModal(true);
+
+  const handleCanvasClick = useCallback(async () => {
+    const originalCanvas = carCanvasRef.current?.getCanvas();
+    if (originalCanvas) {
+      try {
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = originalCanvas.width;
+        tempCanvas.height = originalCanvas.height;
+        const ctx = tempCanvas.getContext("2d");
+
+        if (!ctx) return;
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        ctx.drawImage(originalCanvas, 0, 0);
+
+        // Load and draw logo image
+        const logoImg = new Image();
+        logoImg.src = logo;
+        await new Promise((resolve) => {
+          logoImg.onload = resolve;
+        });
+
+        const padding = 40;
+        const maxSize = Math.min(tempCanvas.width, tempCanvas.height) * 0.2;
+
+        // Calculate aspect ratio
+        const logoAspectRatio = logoImg.width / logoImg.height;
+        let logoWidth = maxSize;
+        let logoHeight = maxSize;
+
+        if (logoAspectRatio > 1) {
+          // Wider than tall
+          logoHeight = maxSize / logoAspectRatio;
+        } else {
+          // Taller than wide
+          logoWidth = maxSize * logoAspectRatio;
+        }
+
+        ctx.globalAlpha = 1.0;
+        ctx.drawImage(
+          logoImg,
+          tempCanvas.width - logoWidth - padding,
+          padding * 0.1,
+          logoWidth,
+          logoHeight,
+        );
+        ctx.globalAlpha = 1.0;
+
+        const dataUrl = tempCanvas.toDataURL("image/jpeg", 0.9);
+        setImageViewerUrl(dataUrl);
+        setShowImageViewerModal(true);
+      } catch (error) {
+        console.error("Failed to generate image for viewer:", error);
+      }
     }
   }, []);
 
@@ -212,7 +242,6 @@ const CarDetail = () => {
             carCanvasRef={carCanvasRef}
             wheelImage={wheelImage}
             handleDownloadImage={handleDownloadImage}
-            handleShare={handleShare}
           />
         </div>
       </div>

@@ -66,11 +66,14 @@ export const useCarData = (id: string | undefined) => {
           isActive: true,
         });
         
-        console.log("Fetched alloys count:", alloysData.alloys.length);
+        // Filter alloys that have an image_url
+        const alloysWithImages = alloysData.alloys.filter(alloy => alloy.image_url && alloy.image_url.trim() !== "");
+        
+        console.log("Fetched alloys count:", alloysData.alloys.length, "Filtered (with images):", alloysWithImages.length);
 
         if (!isMounted) return;
 
-        if (alloysData.alloys.length === 0) {
+        if (alloysWithImages.length === 0) {
           const msg = "No alloys available for this car.";
           setError(msg);
           toast({
@@ -85,7 +88,7 @@ export const useCarData = (id: string | undefined) => {
         // Only set data if everything is valid
         setCurrentCarId(carData.id);
         setCar(carData);
-        setAllAlloys(alloysData.alloys);
+        setAllAlloys(alloysWithImages);
 
       } catch (err: unknown) {
         if (!isMounted) return;
