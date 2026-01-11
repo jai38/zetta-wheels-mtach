@@ -64,11 +64,12 @@ export const useCarData = (id: string | undefined) => {
         const alloysData = await alloyService.getAlloys({
           carId: carData.id,
           isActive: true,
+          limit: 1000,
         });
-        
+
         // Filter alloys that have an image_url
         const alloysWithImages = alloysData.alloys.filter(alloy => alloy.image_url && alloy.image_url.trim() !== "");
-        
+
         console.log("Fetched alloys count:", alloysData.alloys.length, "Filtered (with images):", alloysWithImages.length);
 
         if (!isMounted) return;
@@ -96,9 +97,9 @@ export const useCarData = (id: string | undefined) => {
         const errorMessage = err instanceof Error ? err.message : "Failed to load car details.";
         setError(errorMessage);
         toast({
-            variant: "destructive",
-            title: "Error",
-            description: errorMessage,
+          variant: "destructive",
+          title: "Error",
+          description: errorMessage,
         });
       } finally {
         if (isMounted) setLoading(false);
@@ -133,9 +134,9 @@ export const useCarData = (id: string | undefined) => {
       } catch (err) {
         console.error("Failed to fetch car by color:", err);
         toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Failed to update car color.",
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to update car color.",
         });
       }
     },
