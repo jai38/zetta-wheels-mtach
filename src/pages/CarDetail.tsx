@@ -55,9 +55,10 @@ const CarDetail = () => {
 
   // Calculate adjusted wheel size: +3% for every inch above minimum diameter
   const baseWheelSize = car?.wheelSize || 300;
-  const sizeDiff = selectedDiameter && minDiameter ? selectedDiameter - minDiameter : 0;
+  const sizeDiff =
+    selectedDiameter && minDiameter ? selectedDiameter - minDiameter : 0;
   const adjustedWheelSize = baseWheelSize * (1 + Math.max(0, sizeDiff) * 0.03);
-
+  console.log("Adjusted wheel size:", adjustedWheelSize);
   // Handlers
   const handleSizeSelect = (sizeId: number) => {
     console.log("Size selected:", sizeId);
@@ -144,8 +145,6 @@ const CarDetail = () => {
       }
     }
   }, [carTitle, toast]);
-
-
 
   const handleCanvasClick = useCallback(async () => {
     const originalCanvas = carCanvasRef.current?.getCanvas();
@@ -236,9 +235,7 @@ const CarDetail = () => {
         />
 
         <div className="relative z-10 w-full container mx-auto px-4 py-4">
-          <CarHeader
-            carTitle={carTitle}
-          />
+          <CarHeader carTitle={carTitle} />
           <CarDisplay
             car={car}
             carImageUrl={carImageUrl}
