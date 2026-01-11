@@ -53,6 +53,11 @@ const CarDetail = () => {
     ? `${car.model.make.name} ${car.model.name}`
     : "Car";
 
+  // Calculate adjusted wheel size: +3% for every inch above minimum diameter
+  const baseWheelSize = car?.wheelSize || 300;
+  const sizeDiff = selectedDiameter && minDiameter ? selectedDiameter - minDiameter : 0;
+  const adjustedWheelSize = baseWheelSize * (1 + Math.max(0, sizeDiff) * 0.03);
+
   // Handlers
   const handleSizeSelect = (sizeId: number) => {
     console.log("Size selected:", sizeId);
@@ -242,6 +247,7 @@ const CarDetail = () => {
             carCanvasRef={carCanvasRef}
             wheelImage={wheelImage}
             handleDownloadImage={handleDownloadImage}
+            wheelSize={adjustedWheelSize}
           />
         </div>
       </div>

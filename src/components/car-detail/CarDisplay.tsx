@@ -14,6 +14,7 @@ interface CarDisplayProps {
   carCanvasRef: React.RefObject<CarCanvasRef>;
   wheelImage: string;
   handleDownloadImage: () => void;
+  wheelSize?: number;
 }
 
 export const CarDisplay: React.FC<CarDisplayProps> = ({
@@ -24,6 +25,7 @@ export const CarDisplay: React.FC<CarDisplayProps> = ({
   carCanvasRef,
   wheelImage,
   handleDownloadImage,
+  wheelSize,
 }) => {
   // console.log("Rendering CarDisplay:", { carImageUrl, wheelImage }); // Removed log for cleanliness
 
@@ -49,7 +51,7 @@ export const CarDisplay: React.FC<CarDisplayProps> = ({
           y_front={car.y_front ?? 0}
           x_rear={car.x_rear ?? 0}
           y_rear={car.y_rear ?? 0}
-          wheelSize={car.wheelSize}
+          wheelSize={wheelSize || car.wheelSize}
         />
         <Button
           onClick={(e) => {
