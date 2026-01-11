@@ -58,7 +58,13 @@ const CarDetail = () => {
   const sizeDiff =
     selectedDiameter && minDiameter ? selectedDiameter - minDiameter : 0;
   const adjustedWheelSize = baseWheelSize * (1 + Math.max(0, sizeDiff) * 0.03);
-  console.log("Adjusted wheel size:", adjustedWheelSize);
+  console.log(
+    "Adjusted wheel size:",
+    adjustedWheelSize,
+    selectedDiameter,
+    minDiameter,
+    car?.wheelSize,
+  );
   // Handlers
   const handleSizeSelect = (sizeId: number) => {
     console.log("Size selected:", sizeId);
