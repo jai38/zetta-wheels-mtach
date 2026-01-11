@@ -46,16 +46,18 @@ export const useCarData = (id: string | undefined) => {
         if (!carData.isDefault) {
           const defaultCarsResult = await carService.getCars({
             modelId: carData.modelId,
-            isDefault: true,
-            limit: 1,
             isActive: true,
+            limit: 100, // Fetch more to ensure we find the true default
           });
 
+          // Find the actual default car client-side
+          const defaultCar = defaultCarsResult.cars.find(c => c.isDefault);
+
           if (
-            defaultCarsResult.cars.length > 0 &&
-            defaultCarsResult.cars[0].id !== carData.id
+            defaultCar &&
+            defaultCar.id !== carData.id
           ) {
-            const defaultCar = defaultCarsResult.cars[0];
+            console.log("Redirecting to default car:", defaultCar.id);
             navigate(`/cars/${defaultCar.id}`, { replace: true });
             return; // Stop execution, effect will re-run with new ID
           }

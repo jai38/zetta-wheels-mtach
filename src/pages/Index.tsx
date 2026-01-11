@@ -60,27 +60,20 @@ const Index = () => {
     if (!modelId) return;
 
     try {
-      // First try to get the default car for this model
-      let result = await carService.getCars({
+      // Get all active cars for this model to find the correct default one
+      // We fetch more items (limit: 100) and filter client-side to ensure reliability
+      // as sometimes the backend filter might return the first added car despite parameters.
+      const result = await carService.getCars({
         makeId: selectedMake || undefined,
         modelId: modelId,
-        limit: 1,
+        limit: 100,
         isActive: true,
-        isDefault: true,
       });
 
-      // If no default car found, fall back to any active car
-      if (result.cars.length === 0) {
-        result = await carService.getCars({
-          makeId: selectedMake || undefined,
-          modelId: modelId,
-          limit: 1,
-          isActive: true,
-        });
-      }
-
       if (result.cars.length > 0) {
-        navigate(`/cars/${result.cars[0].id}`);
+        // Find the default car
+        const defaultCar = result.cars.find((c) => c.isDefault) || result.cars[0];
+        navigate(`/cars/${defaultCar.id}`);
       } else {
         console.warn("No car found for the selected model.");
         setError("Could not find a matching car for the selected model.");

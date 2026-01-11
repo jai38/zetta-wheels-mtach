@@ -49,8 +49,15 @@ export const useAlloySelection = (allAlloys: Alloy[], minDiameter: number = 0) =
     const items = Array.from(itemMap.values());
     if (filterKey === "size") {
       (items as AlloySize[]).sort((a, b) => a.diameter - b.diameter);
-    } else if (filterKey === "design" || filterKey === "finish") {
-      (items as (AlloyDesign | AlloyFinish)[]).sort((a, b) => a.name.localeCompare(b.name));
+    } else if (filterKey === "design") {
+      (items as AlloyDesign[]).sort((a, b) => a.name.localeCompare(b.name));
+    } else if (filterKey === "finish") {
+      (items as AlloyFinish[]).sort((a, b) => {
+        // Prioritize "BM" finish
+        if (a.name === "BM") return -1;
+        if (b.name === "BM") return 1;
+        return a.name.localeCompare(b.name);
+      });
     }
     return items;
   };
