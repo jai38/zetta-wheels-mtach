@@ -28,6 +28,12 @@ export const Footer: React.FC = () => {
         </div>
         <div className="flex gap-6">
           <Link
+            to="https://www.neowheels.com/disclaimer"
+            target="_blank"
+            className="hover:text-white transition-colors">
+            Disclaimer
+          </Link>
+          <Link
             to="https://www.neowheels.com/contact"
             target="_blank"
             className="hover:text-white transition-colors">
