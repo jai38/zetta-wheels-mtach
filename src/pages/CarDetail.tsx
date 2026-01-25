@@ -73,6 +73,7 @@ const CarDetail = () => {
 
   const handleDesignSelect = (designId: number) => {
     setSelectedAlloyDesign(designId);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleFinishSelect = (finishId: number) => {

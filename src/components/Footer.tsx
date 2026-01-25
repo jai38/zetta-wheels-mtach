@@ -12,19 +12,19 @@ export const Footer: React.FC = () => {
       className={cn(
         "w-full py-6 px-6 sm:px-12 z-40 transition-all duration-300",
         isHomePage
-          ? "absolute bottom-0 bg-transparent pointer-events-none"
+          ? "relative lg:absolute bottom-0 bg-transparent pointer-events-none"
           : "relative bg-black border-t border-white/10 mt-auto pointer-events-auto",
       )}>
       <div
         className={cn(
-          "flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm text-white/60",
+          "flex flex-col-reverse lg:flex-row justify-between items-center text-xs sm:text-sm text-white/60 gap-4 lg:gap-0",
           isHomePage && "pointer-events-auto",
         )}>
-        <div className="mb-2 sm:mb-0">
-          <div>
+        <div className="mb-2 lg:mb-0 text-center lg:text-left">
+          <div className="text-[10px]">
             &copy; {new Date().getFullYear()} Neo Wheels. All rights reserved.
           </div>
-          <div>Designed & Developed by SISANC</div>
+          <div className="text-[10px]">Designed & Developed by SISANC</div>
         </div>
         <div className="flex gap-6">
           <Link

@@ -5,6 +5,7 @@ import { useCarStore } from "@/stores/useCarStore";
 import { carService, type Make, type CarModel } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 import carBg from "@/assets/home-page-car.png";
+import mobileCarBg from "@/assets/mobile-neowheelmatch.png";
 import logo from "@/assets/logo-wob.png";
 
 const Index = () => {
@@ -85,9 +86,9 @@ const Index = () => {
   };
 
   return (
-    <div className="relative h-screen w-full bg-black overflow-hidden flex flex-col items-center">
+    <div className="relative min-h-screen lg:h-screen w-full bg-black overflow-x-hidden lg:overflow-hidden flex flex-col items-center">
       {/* Main Content Container */}
-      <div className="flex-grow flex flex-col items-center w-full z-40 pt-8 sm:pt-12">
+      <div className="flex-grow flex flex-col items-center w-full z-40 pt-8 sm:pt-12 pb-12 lg:pb-0">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -151,21 +152,24 @@ const Index = () => {
         </motion.div>
       </div>
 
-      {/* Car Image - Absolute at Right Bottom to prevent scrolling */}
+      {/* Car Image - Flows naturally on mobile, absolute on desktop to prevent overlap */}
       <motion.div
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.4, duration: 1.2, ease: "easeOut" }}
-        className="absolute bottom-10 md:bottom-0 right-0 z-10 pointer-events-none flex justify-end items-end w-full">
+        className="relative lg:absolute lg:bottom-0 right-0 z-10 pointer-events-none flex justify-end items-end w-full mt-auto lg:mt-0">
         <div className="relative w-full flex justify-end items-end">
-          <img
-            src={carBg}
-            alt="Sports Car"
-            className="w-[100vw] h-[45vh] sm:w-[90vw] sm:h-[60vh] lg:w-[80vw] lg:h-[70vh] object-contain object-right-bottom block"
-          />
-          {/* Gradients for smoother integration */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent w-full sm:w-1/2 h-full"></div>
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent"></div>
+          <picture className="w-full">
+            <source media="(max-width: 640px)" srcSet={mobileCarBg} />
+            <img
+              src={carBg}
+              alt="Sports Car"
+              className="w-full h-auto max-h-[50vh] landscape:max-h-none landscape:h-[100vh] lg:w-[80vw] lg:h-[70vh] object-contain object-right-bottom block ml-auto"
+            />
+          </picture>
+          {/* Gradients for smoother integration - only visible when absolute on desktop or as overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent w-full lg:w-1/2 h-full"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black to-transparent"></div>
         </div>
       </motion.div>
     </div>

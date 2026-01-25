@@ -35,7 +35,7 @@ export const AlloyDesignSelector = ({
           <Card
             key={design.id}
             className={cn(
-              "cursor-pointer transition-transform transform hover:scale-105",
+              "cursor-pointer transition-transform transform hover:scale-105 bg-white text-black",
               selectedAlloyDesign === design.id &&
                 "border-primary ring-2 ring-primary",
             )}

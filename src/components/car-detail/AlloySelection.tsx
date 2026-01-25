@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AlloyDesignSelector from "@/components/AlloyDesignSelector";
 import AlloyFinishSelector from "@/components/AlloyFinishSelector";
 import SizePicker from "@/components/SizePicker";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   type Alloy,
   type AlloySize,
@@ -39,6 +47,16 @@ export const AlloySelection: React.FC<AlloySelectionProps> = ({
   onSelectFinish,
   minDiameter,
 }) => {
+  const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState("design");
+
+  const handleDesignSelect = (designId: number) => {
+    onSelectDesign(designId);
+    if (isMobile) {
+      setActiveTab("finish");
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {currentAlloyDetails && (
@@ -78,24 +96,57 @@ export const AlloySelection: React.FC<AlloySelectionProps> = ({
           />
         </div>
       )}
-      <div className="mb-6">
-        <h2 className="text-xl font-bold mb-3">Alloy Design</h2>
-        <AlloyDesignSelector
-          carId={carId}
-          allAlloys={allAlloys}
-          designs={availableDesigns}
-          onSelectDesign={onSelectDesign}
-        />
-      </div>
-      <div>
-        <h2 className="text-xl font-bold mb-3">Alloy Finish</h2>
-        <AlloyFinishSelector
-          finishes={availableFinishes}
-          selectedFinish={selectedFinish}
-          onSelectFinish={onSelectFinish}
-          allAlloys={allAlloys}
-        />
-      </div>
+      
+      {isMobile ? (
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="design">Alloy Design</TabsTrigger>
+            <TabsTrigger value="finish">Alloy Finish</TabsTrigger>
+          </TabsList>
+          <TabsContent value="design">
+            <AlloyDesignSelector
+              carId={carId}
+              allAlloys={allAlloys}
+              designs={availableDesigns}
+              onSelectDesign={handleDesignSelect}
+            />
+          </TabsContent>
+          <TabsContent value="finish">
+            <AlloyFinishSelector
+              finishes={availableFinishes}
+              selectedFinish={selectedFinish}
+              onSelectFinish={onSelectFinish}
+              allAlloys={allAlloys}
+            />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <Accordion type="multiple" defaultValue={["design", "finish"]} className="w-full">
+          <AccordionItem value="design" className="border-b-0 mb-4">
+            <AccordionTrigger className="text-xl font-bold hover:no-underline">Alloy Design</AccordionTrigger>
+            <AccordionContent>
+              <AlloyDesignSelector
+                carId={carId}
+                allAlloys={allAlloys}
+                designs={availableDesigns}
+                onSelectDesign={onSelectDesign}
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="finish" className="border-b-0">
+            <AccordionTrigger className="text-xl font-bold hover:no-underline">Alloy Finish</AccordionTrigger>
+            <AccordionContent>
+              <AlloyFinishSelector
+                finishes={availableFinishes}
+                selectedFinish={selectedFinish}
+                onSelectFinish={onSelectFinish}
+                allAlloys={allAlloys}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
     </div>
   );
 };
