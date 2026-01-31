@@ -1,16 +1,9 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AlloyDesignSelector from "@/components/AlloyDesignSelector";
 import AlloyFinishSelector from "@/components/AlloyFinishSelector";
 import SizePicker from "@/components/SizePicker";
-import { useIsMobile } from "@/hooks/use-mobile";
 import {
   type Alloy,
   type AlloySize,
@@ -47,14 +40,19 @@ export const AlloySelection: React.FC<AlloySelectionProps> = ({
   onSelectFinish,
   minDiameter,
 }) => {
-  const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("design");
 
   const handleDesignSelect = (designId: number) => {
     onSelectDesign(designId);
-    if (isMobile) {
-      setActiveTab("finish");
-    }
+    // On mobile-like view (or general tab navigation), we might want to auto-switch
+    // But since we are unifying, let's keep the behavior if it makes sense or remove the check
+    // The user didn't explicitly ask to remove the auto-switch, but effectively "isMobile" check might be redundant if we want consistent behavior.
+    // However, for desktop, auto-switching might be annoying if the user wants to see designs.
+    // Let's keep the auto-switch logic but maybe base it on something else or just keep it simple.
+    // Actually, the original code only switched on mobile.
+    // "on the client UI as we have filters on mobile in 2 tabs, in the same way we should have for desktop as well"
+    // implies consistent behavior.
+    setActiveTab("finish");
   };
 
   return (
@@ -96,57 +94,37 @@ export const AlloySelection: React.FC<AlloySelectionProps> = ({
           />
         </div>
       )}
-      
-      {isMobile ? (
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="design">Alloy Design</TabsTrigger>
-            <TabsTrigger value="finish">Alloy Finish</TabsTrigger>
-          </TabsList>
-          <TabsContent value="design">
-            <AlloyDesignSelector
-              carId={carId}
-              allAlloys={allAlloys}
-              designs={availableDesigns}
-              onSelectDesign={handleDesignSelect}
-            />
-          </TabsContent>
-          <TabsContent value="finish">
-            <AlloyFinishSelector
-              finishes={availableFinishes}
-              selectedFinish={selectedFinish}
-              onSelectFinish={onSelectFinish}
-              allAlloys={allAlloys}
-            />
-          </TabsContent>
-        </Tabs>
-      ) : (
-        <Accordion type="multiple" defaultValue={["design", "finish"]} className="w-full">
-          <AccordionItem value="design" className="border-b-0 mb-4">
-            <AccordionTrigger className="text-xl font-bold hover:no-underline">Alloy Design</AccordionTrigger>
-            <AccordionContent>
-              <AlloyDesignSelector
-                carId={carId}
-                allAlloys={allAlloys}
-                designs={availableDesigns}
-                onSelectDesign={onSelectDesign}
-              />
-            </AccordionContent>
-          </AccordionItem>
 
-          <AccordionItem value="finish" className="border-b-0">
-            <AccordionTrigger className="text-xl font-bold hover:no-underline">Alloy Finish</AccordionTrigger>
-            <AccordionContent>
-              <AlloyFinishSelector
-                finishes={availableFinishes}
-                selectedFinish={selectedFinish}
-                onSelectFinish={onSelectFinish}
-                allAlloys={allAlloys}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      )}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsTrigger
+            value="design"
+            className="data-[state=active]:bg-white data-[state=active]:text-black">
+            Alloy Design
+          </TabsTrigger>
+          <TabsTrigger
+            value="finish"
+            className="data-[state=active]:bg-white data-[state=active]:text-black">
+            Alloy Finish
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="design">
+          <AlloyDesignSelector
+            carId={carId}
+            allAlloys={allAlloys}
+            designs={availableDesigns}
+            onSelectDesign={handleDesignSelect}
+          />
+        </TabsContent>
+        <TabsContent value="finish">
+          <AlloyFinishSelector
+            finishes={availableFinishes}
+            selectedFinish={selectedFinish}
+            onSelectFinish={onSelectFinish}
+            allAlloys={allAlloys}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

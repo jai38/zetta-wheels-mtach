@@ -78,6 +78,7 @@ const CarDetail = () => {
 
   const handleFinishSelect = (finishId: number) => {
     setSelectedAlloyFinish(finishId);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDownloadImage = useCallback(async () => {
