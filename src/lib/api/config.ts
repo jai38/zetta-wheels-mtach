@@ -12,9 +12,13 @@ export const apiClient = axios.create({
   },
 });
 
-// Request interceptor to add auth token
+// Request interceptor to add auth token and tenant ID
 apiClient.interceptors.request.use(
   (config) => {
+    // Add Tenant ID
+    const tenantId = import.meta.env.VITE_TENANT_ID || 'NEO';
+    config.headers['X-Tenant-ID'] = tenantId;
+
     const token = localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
