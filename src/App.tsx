@@ -14,8 +14,8 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const queryClient = new QueryClient();
 
 const LoadingFallback = () => (
-  <div className="flex h-screen w-full items-center justify-center bg-black">
-    <Loader className="h-8 w-8 animate-spin text-white" />
+  <div className="flex h-screen w-full items-center justify-center bg-white">
+    <Loader className="h-8 w-8 animate-spin text-black" />
   </div>
 );
 

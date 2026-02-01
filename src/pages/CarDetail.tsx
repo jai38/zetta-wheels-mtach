@@ -12,7 +12,7 @@ import { useAlloySelection } from "@/hooks/useAlloySelection";
 import { CarHeader } from "@/components/car-detail/CarHeader";
 import { CarDisplay } from "@/components/car-detail/CarDisplay";
 import { AlloySelection } from "@/components/car-detail/AlloySelection";
-import logo from "@/assets/logo-black-text.png";
+import logo from "@/assets/zetta-logo-black.png";
 
 const CarDetail = () => {
   const { id } = useParams<{ id: string }>();

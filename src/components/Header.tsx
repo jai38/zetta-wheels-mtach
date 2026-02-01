@@ -1,7 +1,7 @@
 // src/components/Header.tsx
 import React from "react";
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo-wob.png";
+import logo from "@/assets/zetta-logo-black.png";
 
 export const Header: React.FC = () => {
   return (
@@ -10,7 +10,7 @@ export const Header: React.FC = () => {
         <Link to="/" className="group flex items-center select-none">
           <img
             src={logo}
-            alt="Neo Wheels Logo"
+            alt="Zetta Wheels Logo"
             className="h-11 sm:h-16 w-auto object-contain"
           />
         </Link>

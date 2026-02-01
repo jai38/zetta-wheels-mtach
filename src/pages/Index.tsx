@@ -6,7 +6,7 @@ import { carService, type Make, type CarModel } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 import carBg from "@/assets/home-page-car.png";
 import mobileCarBg from "@/assets/mobile-neowheelmatch.png";
-import logo from "@/assets/logo-wob.png";
+import logo from "@/assets/zetta-logo-black.png";
 
 const Index = () => {
   const { selectedMake, selectedModel, setSelectedMake, setSelectedModel } =
@@ -86,7 +86,7 @@ const Index = () => {
   };
 
   return (
-    <div className="relative min-h-screen lg:h-screen w-full bg-black overflow-x-hidden lg:overflow-hidden flex flex-col items-center">
+    <div className="relative min-h-screen lg:h-screen w-full bg-white overflow-x-hidden lg:overflow-hidden flex flex-col items-center">
       {/* Main Content Container */}
       <div className="flex-grow flex flex-col items-center w-full z-40 pt-8 sm:pt-12 pb-12 lg:pb-0">
         <motion.div
@@ -98,14 +98,14 @@ const Index = () => {
           {/* Logo */}
           <img 
             src={logo} 
-            alt="Neo Wheels" 
+            alt="Zetta Wheels" 
             className="h-20 sm:h-28 mb-6 object-contain"
           />
 
-          <h1 className="text-4xl sm:text-6xl font-bold text-white mb-2 tracking-tight uppercase">
+          <h1 className="text-4xl sm:text-6xl font-bold text-black mb-2 tracking-tight uppercase">
             Wheel Match
           </h1>
-          <p className="text-white/60 text-lg sm:text-xl font-light mb-8">
+          <p className="text-black/60 text-lg sm:text-xl font-light mb-8">
             Find the Perfect Alloy Wheels for Your Car
           </p>
 
@@ -168,8 +168,8 @@ const Index = () => {
             />
           </picture>
           {/* Gradients for smoother integration - only visible when absolute on desktop or as overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent w-full lg:w-1/2 h-full"></div>
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent w-full lg:w-1/2 h-full"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent"></div>
         </div>
       </motion.div>
     </div>
