@@ -73,12 +73,12 @@ const CarDetail = () => {
 
   const handleDesignSelect = (designId: number) => {
     setSelectedAlloyDesign(designId);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    carCanvasRef.current?.getCanvas()?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   const handleFinishSelect = (finishId: number) => {
     setSelectedAlloyFinish(finishId);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    carCanvasRef.current?.getCanvas()?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   const handleDownloadImage = useCallback(async () => {
