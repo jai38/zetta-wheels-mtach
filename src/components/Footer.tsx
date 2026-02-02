@@ -22,19 +22,19 @@ export const Footer: React.FC = () => {
         )}>
         <div className="mb-2 lg:mb-0 text-center lg:text-left">
           <div className="text-[10px]">
-            &copy; {new Date().getFullYear()} Neo Wheels. All rights reserved.
+            &copy; {new Date().getFullYear()} Zetta Wheels. All rights reserved.
           </div>
           <div className="text-[10px]">Designed & Developed by SISANC</div>
         </div>
         <div className="flex gap-6">
           <Link
-            to="https://www.neowheels.com/disclaimer"
+            to="https://www.zettaalloys.com/disclaimer"
             target="_blank"
             className="hover:text-white transition-colors">
             Disclaimer
           </Link>
           <Link
-            to="https://www.neowheels.com/contact"
+            to="https://www.zettaalloys.com/contact"
             target="_blank"
             className="hover:text-white transition-colors">
             Contact Us

@@ -16,7 +16,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // Add Tenant ID
-    const tenantId = import.meta.env.VITE_TENANT_ID || 'NEO';
+    const tenantId = import.meta.env.VITE_TENANT_ID || 'ZETTA';
     config.headers['X-Tenant-ID'] = tenantId;
 
     const token = localStorage.getItem('auth_token');
