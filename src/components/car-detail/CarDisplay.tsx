@@ -60,7 +60,7 @@ export const CarDisplay: React.FC<CarDisplayProps> = ({
           }}
           variant="ghost"
           size="icon"
-          className="absolute bottom-1 right-12 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-4 sm:right-16 bg-transparent hover:bg-transparent hover:text-primary"
+          className="absolute bottom-12 right-12 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-20 sm:right-16 bg-white/50 hover:bg-white/80 text-black shadow-sm z-50"
           aria-label="Zoom Image"
         >
           <Maximize2 className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -73,7 +73,7 @@ export const CarDisplay: React.FC<CarDisplayProps> = ({
           disabled={!car}
           variant="ghost"
           size="icon"
-          className="absolute bottom-1 right-2 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-4 sm:right-4 bg-transparent hover:bg-transparent hover:text-primary"
+          className="absolute bottom-12 right-2 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-20 sm:right-4 bg-white/50 hover:bg-white/80 text-black shadow-sm z-50"
           aria-label="Download Car Image"
         >
           <DownloadIcon />

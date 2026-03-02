@@ -73,12 +73,16 @@ const CarDetail = () => {
 
   const handleDesignSelect = (designId: number) => {
     setSelectedAlloyDesign(designId);
-    carCanvasRef.current?.getCanvas()?.scrollIntoView({ behavior: "smooth", block: "center" });
+    carCanvasRef.current
+      ?.getCanvas()
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   const handleFinishSelect = (finishId: number) => {
     setSelectedAlloyFinish(finishId);
-    carCanvasRef.current?.getCanvas()?.scrollIntoView({ behavior: "smooth", block: "center" });
+    carCanvasRef.current
+      ?.getCanvas()
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   const handleDownloadImage = useCallback(async () => {
@@ -236,41 +240,45 @@ const CarDetail = () => {
 
   return (
     <>
-      <div className="relative w-full overflow-hidden bg-muted/30">
+      <div className="relative w-full bg-muted/30 z-20">
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${carBackground})` }}
+          // style={{ backgroundImage: `url(${carBackground})` }}
         />
 
-        <div className="relative z-10 w-full container mx-auto px-4 py-4">
+        <div className="relative z-40 w-full container mx-auto px-4 pt-0 pb-0">
           <CarHeader carTitle={carTitle} />
-          <CarDisplay
-            car={car}
-            carImageUrl={carImageUrl}
-            isMobile={isMobile}
-            handleCanvasClick={handleCanvasClick}
-            carCanvasRef={carCanvasRef}
-            wheelImage={wheelImage}
-            handleDownloadImage={handleDownloadImage}
-            wheelSize={adjustedWheelSize}
-          />
+          <div className="-mt-6 sm:-mt-12">
+            <CarDisplay
+              car={car}
+              carImageUrl={carImageUrl}
+              isMobile={isMobile}
+              handleCanvasClick={handleCanvasClick}
+              carCanvasRef={carCanvasRef}
+              wheelImage={wheelImage}
+              handleDownloadImage={handleDownloadImage}
+              wheelSize={adjustedWheelSize}
+            />
+          </div>
         </div>
       </div>
 
-      <AlloySelection
-        carId={car.id}
-        allAlloys={allAlloys}
-        currentAlloyDetails={currentAlloyDetails}
-        availableSizes={uniqueDiameterSizes}
-        availableDesigns={availableDesigns}
-        availableFinishes={availableFinishes}
-        selectedSize={selectedDiameter}
-        selectedFinish={selectedAlloyFinish}
-        onSelectSize={handleSizeSelect}
-        onSelectDesign={handleDesignSelect}
-        onSelectFinish={handleFinishSelect}
-        minDiameter={minDiameter}
-      />
+      <div className="-mt-8 sm:-mt-16 relative z-10">
+        <AlloySelection
+          carId={car.id}
+          allAlloys={allAlloys}
+          currentAlloyDetails={currentAlloyDetails}
+          availableSizes={uniqueDiameterSizes}
+          availableDesigns={availableDesigns}
+          availableFinishes={availableFinishes}
+          selectedSize={selectedDiameter}
+          selectedFinish={selectedAlloyFinish}
+          onSelectSize={handleSizeSelect}
+          onSelectDesign={handleDesignSelect}
+          onSelectFinish={handleFinishSelect}
+          minDiameter={minDiameter}
+        />
+      </div>
 
       <ImageViewerModal
         imageUrl={imageViewerUrl}

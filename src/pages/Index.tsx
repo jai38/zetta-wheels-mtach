@@ -73,7 +73,8 @@ const Index = () => {
 
       if (result.cars.length > 0) {
         // Find the default car
-        const defaultCar = result.cars.find((c) => c.isDefault) || result.cars[0];
+        const defaultCar =
+          result.cars.find((c) => c.isDefault) || result.cars[0];
         navigate(`/cars/${defaultCar.id}`);
       } else {
         console.warn("No car found for the selected model.");
@@ -94,11 +95,10 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="w-full max-w-4xl px-6 flex flex-col items-center text-center">
-          
           {/* Logo */}
-          <img 
-            src={logo} 
-            alt="Zetta Wheels" 
+          <img
+            src={logo}
+            alt="Zetta Wheels"
             className="h-20 sm:h-28 mb-6 object-contain"
           />
 
@@ -159,14 +159,14 @@ const Index = () => {
         transition={{ delay: 0.4, duration: 1.2, ease: "easeOut" }}
         className="relative lg:absolute lg:bottom-0 right-0 z-10 pointer-events-none flex justify-end items-end w-full mt-auto lg:mt-0">
         <div className="relative w-full flex justify-end items-end">
-          <picture className="w-full">
+          {/* <picture className="w-full">
             <source media="(max-width: 640px)" srcSet={mobileCarBg} />
             <img
               src={carBg}
               alt="Sports Car"
               className="w-full h-auto max-h-[50vh] landscape:max-h-none landscape:h-[100vh] lg:w-[80vw] lg:h-[70vh] object-contain object-right-bottom block ml-auto"
             />
-          </picture>
+          </picture> */}
           {/* Gradients for smoother integration - only visible when absolute on desktop or as overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent w-full lg:w-1/2 h-full"></div>
           <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent"></div>
