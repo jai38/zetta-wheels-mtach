@@ -263,7 +263,7 @@ const CarDetail = () => {
         </div>
       </div>
 
-      <div className="-mt-8 sm:-mt-16 relative z-10">
+      <div className="-mt-8 sm:-mt-16 relative z-50">
         <AlloySelection
           carId={car.id}
           allAlloys={allAlloys}
