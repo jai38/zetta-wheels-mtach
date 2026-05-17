@@ -48,9 +48,9 @@ export const AlloyFinishSelector = ({
           <Card
             key={finish.id}
             className={cn(
-              "cursor-pointer transition-transform transform hover:scale-105 bg-white text-black",
+              "cursor-pointer transition-all duration-300 transform hover:-translate-y-1 bg-[#f5f5f7] text-[#1d1d1f] rounded-2xl border-2 border-transparent",
               selectedFinish === finish.id &&
-                "border-primary ring-2 ring-primary",
+                "border-[#1d1d1f] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] scale-[1.02]",
             )}
             onClick={() => onSelectFinish(finish.id)}>
             <CardContent className="p-2 flex flex-col items-center gap-1">

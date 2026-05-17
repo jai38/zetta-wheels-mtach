@@ -6,7 +6,6 @@ import { CarCanvasRef } from "@/components/CarCanvas";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageViewerModal } from "@/components/ImageViewerModal";
-import carBackground from "@/assets/car_background.png";
 import { useCarData } from "@/hooks/useCarData";
 import { useAlloySelection } from "@/hooks/useAlloySelection";
 import { CarHeader } from "@/components/car-detail/CarHeader";
@@ -219,20 +218,20 @@ const CarDetail = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-black border-t-transparent" />
       </div>
     );
   }
 
   if (error || !car) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="text-center">
-          <p className="text-muted-foreground mb-4">
+          <p className="text-gray-500 mb-4">
             {error || "Car not found"}
           </p>
-          <Button onClick={() => navigate("/")}>Back to Catalog</Button>
+          <Button onClick={() => navigate("/")} className="bg-black text-white hover:bg-gray-800">Back to Catalog</Button>
         </div>
       </div>
     );
@@ -240,12 +239,8 @@ const CarDetail = () => {
 
   return (
     <>
-      <div className="relative w-full bg-muted/30 z-20">
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          // style={{ backgroundImage: `url(${carBackground})` }}
-        />
-
+      <div className="relative w-full bg-white z-20">
+        {/* Clean white background - no background image */}
         <div className="relative z-40 w-full container mx-auto px-4 pt-0 pb-0">
           <CarHeader carTitle={carTitle} />
           <div className="-mt-6 sm:-mt-12">
@@ -263,7 +258,10 @@ const CarDetail = () => {
         </div>
       </div>
 
-      <div className="-mt-8 sm:-mt-16 relative z-50">
+      {/* Subtle divider */}
+      <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
+
+      <div className="relative z-50">
         <AlloySelection
           carId={car.id}
           allAlloys={allAlloys}

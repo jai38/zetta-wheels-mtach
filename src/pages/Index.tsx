@@ -1,12 +1,41 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { DependentSelect } from "@/components/DependentSelect";
 import { useCarStore } from "@/stores/useCarStore";
 import { carService, type Make, type CarModel } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
-import carBg from "@/assets/home-page-car.png";
-import mobileCarBg from "@/assets/mobile-neowheelmatch.png";
 import logo from "@/assets/zetta-logo-black.png";
+
+// Zetta Alloys product images from zettaalloys.com
+const heroImages = [
+  {
+    src: "https://zettaalloys.com/images/Upload/product/CA---911-11_73564.jpg",
+    name: "CA-911",
+    finish: "Black Machined",
+  },
+  {
+    src: "https://zettaalloys.com/images/Upload/product/K-9-1_79035.webp",
+    name: "K-9",
+    finish: "Chrome Black Machined",
+  },
+  {
+    src: "https://zettaalloys.com/images/Upload/product/DVL-CBM-1_26165.jpg",
+    name: "DVL-666",
+    finish: "Chrome Black Machined",
+  },
+  {
+    src: "https://zettaalloys.com/images/Upload/product/CA---911-12_21539.jpg",
+    name: "CA-911",
+    finish: "Hyper Silver",
+  },
+  {
+    src: "https://zettaalloys.com/images/Upload/product/k_9_b1_88262.webp",
+    name: "K-9",
+    finish: "Black",
+  },
+];
+
+const SLIDE_INTERVAL = 4000; // 4 seconds per slide
 
 const Index = () => {
   const { selectedMake, selectedModel, setSelectedMake, setSelectedModel } =
@@ -15,7 +44,16 @@ const Index = () => {
   const [makes, setMakes] = useState<Make[]>([]);
   const [models, setModels] = useState<CarModel[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const navigate = useNavigate();
+
+  // Auto-scroll carousel
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, SLIDE_INTERVAL);
+    return () => clearInterval(timer);
+  }, []);
 
   // Load makes on mount
   useEffect(() => {
@@ -86,92 +124,158 @@ const Index = () => {
     }
   };
 
+  const goToSlide = useCallback((index: number) => {
+    setCurrentImageIndex(index);
+  }, []);
+
   return (
-    <div className="relative min-h-screen lg:h-screen w-full bg-white overflow-x-hidden lg:overflow-hidden flex flex-col items-center">
-      {/* Main Content Container */}
-      <div className="flex-grow flex flex-col items-center w-full z-40 pt-8 sm:pt-12 pb-12 lg:pb-0">
+    <div className="relative min-h-screen w-full bg-[#fbfbfd] overflow-x-hidden flex flex-col">
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col lg:flex-row min-h-screen max-w-[1400px] mx-auto w-full">
+        
+        {/* Left side - Content */}
+        <div className="flex-1 flex flex-col justify-center items-center lg:items-start px-6 sm:px-12 lg:px-20 pt-20 sm:pt-24 lg:pt-0 pb-8 lg:pb-0">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full max-w-xl flex flex-col items-center lg:items-start text-center lg:text-left">
+            
+            {/* Logo */}
+            <motion.img 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              src={logo} 
+              alt="Zetta Alloys" 
+              className="h-30 sm:h-40 object-contain"
+            />
+
+            <h1 className="text-5xl sm:text-6xl lg:text-[5rem] font-semibold text-[#1d1d1f] mb-4 tracking-tight leading-[1.05]">
+              Wheel Match.
+            </h1>
+            <p className="text-[#86868b] text-xl sm:text-2xl font-normal mb-12 max-w-md tracking-normal">
+              Visualize premium alloy wheels on your car.
+            </p>
+
+            {error && (
+              <div className="mb-6 p-3 text-red-600 bg-red-50 border border-red-100 rounded text-sm w-full">
+                {error}
+              </div>
+            )}
+
+            <div className="w-full flex flex-col gap-4 relative z-50">
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <div className="w-full">
+                  <DependentSelect
+                    options={makes.map((m) => ({
+                      id: m.id.toString(),
+                      name: m.name,
+                    }))}
+                    value={selectedMake?.toString() || ""}
+                    onChange={(val) => {
+                      const makeId = val ? parseInt(val) : null;
+                      setSelectedMake(makeId);
+                      setSelectedModel(null);
+                    }}
+                    placeholder="Select Your Car Make"
+                  />
+                </div>
+
+                <div className="w-full">
+                  <DependentSelect
+                    options={models.map((m) => ({
+                      id: m.id.toString(),
+                      name: m.name,
+                    }))}
+                    value={selectedModel?.toString() || ""}
+                    onChange={(val) =>
+                      handleModelChange(val ? parseInt(val) : null)
+                    }
+                    placeholder="Select Your Car Model"
+                    disabled={!selectedMake}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Tagline */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 0.8 }}
+              className="text-[#86868b] text-xs font-medium mt-8 tracking-widest uppercase">
+              Precision Engineered • Premium Quality
+            </motion.p>
+          </motion.div>
+        </div>
+
+        {/* Right side - Auto-scrolling Product Image Carousel */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-4xl px-6 flex flex-col items-center text-center">
-          {/* Logo */}
-          <img
-            src={logo}
-            alt="Zetta Wheels"
-            className="h-20 sm:h-28 mb-6 object-contain"
-          />
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 1 }}
+          className="flex-1 flex flex-col items-center justify-center relative lg:pr-12 pb-12 lg:pb-0">
+          
+          {/* Subtle circular glow behind wheel */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[60%] h-[60%] rounded-full bg-gradient-to-br from-gray-100 to-gray-50 blur-3xl opacity-80" />
+          </div>
 
-          <h1 className="text-4xl sm:text-6xl font-bold text-black mb-2 tracking-tight uppercase">
-            Wheel Match
-          </h1>
-          <p className="text-black/60 text-lg sm:text-xl font-light mb-8">
-            Find the Perfect Alloy Wheels for Your Car
-          </p>
+          {/* Carousel Container */}
+          <div className="relative z-10 w-[65%] sm:w-[55%] lg:w-[80%] max-w-[500px] aspect-square flex items-center justify-center">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={currentImageIndex}
+                src={heroImages[currentImageIndex].src}
+                alt={`${heroImages[currentImageIndex].name} ${heroImages[currentImageIndex].finish}`}
+                initial={{ opacity: 0, scale: 0.92, rotate: -8 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                exit={{ opacity: 0, scale: 0.92, rotate: 8 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full h-full object-contain drop-shadow-2xl"
+              />
+            </AnimatePresence>
+          </div>
 
-          {error && (
-            <div className="mb-4 p-3 text-red-500 bg-red-500/10 border border-red-500/20 rounded text-sm">
-              {error}
-            </div>
-          )}
+          {/* Product name label */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`label-${currentImageIndex}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4 }}
+              className="relative z-10 mt-4 text-center">
+              <span className="text-sm font-semibold text-black tracking-wide uppercase">
+                {heroImages[currentImageIndex].name}
+              </span>
+              <span className="text-sm text-gray-400 ml-2">
+                {heroImages[currentImageIndex].finish}
+              </span>
+            </motion.div>
+          </AnimatePresence>
 
-          <div className="w-full max-w-2xl flex flex-col gap-6 relative z-50">
-            <div className="flex flex-col md:flex-row gap-4 w-full">
-              <div className="w-full">
-                <DependentSelect
-                  options={makes.map((m) => ({
-                    id: m.id.toString(),
-                    name: m.name,
-                  }))}
-                  value={selectedMake?.toString() || ""}
-                  onChange={(val) => {
-                    const makeId = val ? parseInt(val) : null;
-                    setSelectedMake(makeId);
-                    setSelectedModel(null);
-                  }}
-                  placeholder="Select Your Car Make"
-                />
-              </div>
-
-              <div className="w-full">
-                <DependentSelect
-                  options={models.map((m) => ({
-                    id: m.id.toString(),
-                    name: m.name,
-                  }))}
-                  value={selectedModel?.toString() || ""}
-                  onChange={(val) =>
-                    handleModelChange(val ? parseInt(val) : null)
-                  }
-                  placeholder="Select Your Car Model"
-                  disabled={!selectedMake}
-                />
-              </div>
-            </div>
+          {/* Dot indicators */}
+          <div className="relative z-10 flex items-center gap-2 mt-4">
+            {heroImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`transition-all duration-300 rounded-full ${
+                  index === currentImageIndex
+                    ? "w-2.5 h-2.5 bg-[#1d1d1f]"
+                    : "w-2 h-2 bg-[#d2d2d7] hover:bg-[#86868b]"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </motion.div>
       </div>
 
-      {/* Car Image - Flows naturally on mobile, absolute on desktop to prevent overlap */}
-      <motion.div
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.4, duration: 1.2, ease: "easeOut" }}
-        className="relative lg:absolute lg:bottom-0 right-0 z-10 pointer-events-none flex justify-end items-end w-full mt-auto lg:mt-0">
-        <div className="relative w-full flex justify-end items-end">
-          {/* <picture className="w-full">
-            <source media="(max-width: 640px)" srcSet={mobileCarBg} />
-            <img
-              src={carBg}
-              alt="Sports Car"
-              className="w-full h-auto max-h-[50vh] landscape:max-h-none landscape:h-[100vh] lg:w-[80vw] lg:h-[70vh] object-contain object-right-bottom block ml-auto"
-            />
-          </picture> */}
-          {/* Gradients for smoother integration - only visible when absolute on desktop or as overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent w-full lg:w-1/2 h-full"></div>
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent"></div>
-        </div>
-      </motion.div>
+      {/* Clean bottom space instead of accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-8" />
     </div>
   );
 };

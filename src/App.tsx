@@ -8,6 +8,7 @@ import { Layout } from "./components/Layout";
 import { Loader } from "lucide-react";
 
 const Index = lazy(() => import("./pages/Index"));
+const Index2 = lazy(() => import("./pages/Index2"));
 const CarDetail = lazy(() => import("./pages/CarDetail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -28,7 +29,8 @@ const App = () => (
         <Layout>
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Index2 />} />
+              <Route path="/homepage-2" element={<Index />} />
               <Route path="/cars/:id" element={<CarDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

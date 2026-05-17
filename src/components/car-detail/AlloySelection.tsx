@@ -42,6 +42,11 @@ export const AlloySelection: React.FC<AlloySelectionProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState("design");
 
+  const handleSizeSelect = (sizeId: number) => {
+    onSelectSize(sizeId);
+    setActiveTab("design");
+  };
+
   const handleDesignSelect = (designId: number) => {
     onSelectDesign(designId);
     // On mobile-like view (or general tab navigation), we might want to auto-switch
@@ -68,7 +73,7 @@ export const AlloySelection: React.FC<AlloySelectionProps> = ({
                 onClick={() =>
                   window.open(currentAlloyDetails.buy_url, "_blank")
                 }
-                className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2 h-10 shadow-sm">
+                className="bg-[#1d1d1f] hover:bg-[#333336] text-white font-medium px-8 py-2 h-11 rounded-full shadow-[0_8px_20px_rgb(0,0,0,0.2)] transition-all duration-300">
                 Buy Now
               </Button>
             )}
@@ -78,7 +83,7 @@ export const AlloySelection: React.FC<AlloySelectionProps> = ({
             <SizePicker
               sizes={availableSizes}
               selectedDiameter={selectedSize}
-              onSelectSize={onSelectSize}
+              onSelectSize={handleSizeSelect}
               minDiameter={minDiameter}
             />
           </div>
@@ -89,22 +94,22 @@ export const AlloySelection: React.FC<AlloySelectionProps> = ({
           <SizePicker
             sizes={availableSizes}
             selectedDiameter={selectedSize}
-            onSelectSize={onSelectSize}
+            onSelectSize={handleSizeSelect}
             minDiameter={minDiameter}
           />
         </div>
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4">
+        <TabsList className="grid w-full max-w-sm mx-auto grid-cols-2 mb-8 bg-[#f5f5f7] p-1 rounded-full h-12">
           <TabsTrigger
             value="design"
-            className="data-[state=active]:bg-white data-[state=active]:text-black">
+            className="rounded-full data-[state=active]:bg-white data-[state=active]:text-[#1d1d1f] data-[state=active]:shadow-sm text-[#86868b] font-medium transition-all">
             Alloy Design
           </TabsTrigger>
           <TabsTrigger
             value="finish"
-            className="data-[state=active]:bg-white data-[state=active]:text-black">
+            className="rounded-full data-[state=active]:bg-white data-[state=active]:text-[#1d1d1f] data-[state=active]:shadow-sm text-[#86868b] font-medium transition-all">
             Alloy Finish
           </TabsTrigger>
         </TabsList>

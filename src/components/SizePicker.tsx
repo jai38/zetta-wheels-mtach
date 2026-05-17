@@ -30,10 +30,10 @@ export const SizePicker = ({
           key={size.id}
           variant={selectedDiameter === size.diameter ? "default" : "outline"}
           onClick={() => onSelectSize(size.id)}
-          className={`h-10 min-w-[3.5rem] text-lg font-bold transition-all ${
+          className={`h-11 min-w-[4rem] rounded-full text-lg font-medium transition-all duration-300 ${
             selectedDiameter === size.diameter
-              ? "bg-primary text-primary-foreground shadow-md scale-105"
-              : "hover:bg-accent hover:text-accent-foreground"
+              ? "bg-[#1d1d1f] text-white shadow-[0_8px_20px_rgb(0,0,0,0.2)] hover:bg-[#333336]"
+              : "bg-[#f5f5f7] text-[#1d1d1f] border border-transparent hover:bg-[#e8e8ed]"
           }`}>
           {size.diameter}"
         </Button>

@@ -56,27 +56,15 @@ export const CarDisplay: React.FC<CarDisplayProps> = ({
         <Button
           onClick={(e) => {
             e.stopPropagation();
-            handleCanvasClick();
-          }}
-          variant="ghost"
-          size="icon"
-          className="absolute bottom-12 right-12 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-20 sm:right-16 bg-white/50 hover:bg-white/80 text-black shadow-sm z-50"
-          aria-label="Zoom Image"
-        >
-          <Maximize2 className="h-4 w-4 sm:h-5 sm:w-5" />
-        </Button>
-        <Button
-          onClick={(e) => {
-            e.stopPropagation();
             handleDownloadImage();
           }}
           disabled={!car}
-          variant="ghost"
+          variant="default"
           size="icon"
-          className="absolute bottom-12 right-2 h-8 w-8 sm:h-10 sm:w-10 sm:bottom-20 sm:right-4 bg-white/50 hover:bg-white/80 text-black shadow-sm z-50"
+          className="absolute bottom-2 right-2 h-12 w-12 sm:h-14 sm:w-14 sm:bottom-4 sm:right-4 bg-[#1d1d1f] text-white hover:bg-[#333336] shadow-lg rounded-full z-10"
           aria-label="Download Car Image"
         >
-          <DownloadIcon />
+          <DownloadIcon className="w-6 h-6 sm:w-7 sm:h-7" />
         </Button>
       </div>
     </div>
