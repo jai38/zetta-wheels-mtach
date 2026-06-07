@@ -11,6 +11,7 @@ import { useAlloySelection } from "@/hooks/useAlloySelection";
 import { CarHeader } from "@/components/car-detail/CarHeader";
 import { CarDisplay } from "@/components/car-detail/CarDisplay";
 import { AlloySelection } from "@/components/car-detail/AlloySelection";
+import { ColorSelector } from "@/components/ColorSelector";
 import logo from "@/assets/zetta-logo-black.png";
 
 const CarDetail = () => {
@@ -32,7 +33,7 @@ const CarDetail = () => {
   const [imageViewerUrl, setImageViewerUrl] = useState<string | null>(null);
 
   // Custom Hooks
-  const { car, allAlloys, loading, error } = useCarData(id);
+  const { car, allAlloys, colors, loading, error, fetchCarByColor } = useCarData(id);
 
   const minDiameter = car?.model?.defaultAlloySize || 0;
 
@@ -255,6 +256,11 @@ const CarDetail = () => {
               wheelSize={adjustedWheelSize}
             />
           </div>
+          <ColorSelector
+            colors={colors}
+            currentColorId={car.colorId}
+            onSelectColor={fetchCarByColor}
+          />
         </div>
       </div>
 

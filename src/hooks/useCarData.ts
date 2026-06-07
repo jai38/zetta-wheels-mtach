@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { carService, alloyService, type Car, type Alloy } from "@/lib/api";
+import { carService, alloyService, type Car, type Alloy, type CarColorOption } from "@/lib/api";
 import { useCarStore } from "@/stores/useCarStore";
 import { useToast } from "@/hooks/use-toast";
 
@@ -10,8 +10,11 @@ export const useCarData = (id: string | undefined) => {
   const { setCurrentCarId, resetSelections } = useCarStore();
   const [car, setCar] = useState<Car | null>(null);
   const [allAlloys, setAllAlloys] = useState<Alloy[]>([]);
+  const [colors, setColors] = useState<CarColorOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const prevModelIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -23,18 +26,17 @@ export const useCarData = (id: string | undefined) => {
         return;
       }
 
-      // Reset state and store selections on ID change
-      resetSelections();
-      setCar(null);
-      setAllAlloys([]);
-      setLoading(true);
-      setError(null);
-
       try {
         const carId = parseInt(id, 10);
         if (isNaN(carId)) {
           throw new Error("Invalid car ID format.");
         }
+
+        // Only show full loading spinner if we don't have a car loaded yet
+        if (prevModelIdRef.current === null) {
+          setLoading(true);
+        }
+        setError(null);
 
         console.log("Fetching details for car ID:", carId);
         const carData = await carService.getCarById(carId);
@@ -42,55 +44,38 @@ export const useCarData = (id: string | undefined) => {
 
         if (!isMounted) return;
 
-        // Handle Default Car Redirect
-        if (!carData.isDefault) {
-          const defaultCarsResult = await carService.getCars({
-            modelId: carData.modelId,
-            isActive: true,
-            limit: 100, // Fetch more to ensure we find the true default
-          });
+        const isSameModel = prevModelIdRef.current !== null && prevModelIdRef.current === carData.modelId;
 
-          // Find the actual default car client-side
-          const defaultCar = defaultCarsResult.cars.find(c => c.isDefault);
-
-          if (
-            defaultCar &&
-            defaultCar.id !== carData.id
-          ) {
-            console.log("Redirecting to default car:", defaultCar.id);
-            navigate(`/cars/${defaultCar.id}`, { replace: true });
-            return; // Stop execution, effect will re-run with new ID
-          }
-        }
-
-        const alloysData = await alloyService.getAlloys({
-          carId: carData.id,
-          isActive: true,
-          limit: 1000,
-        });
-
-        // Filter alloys that have an image_url
-        const alloysWithImages = alloysData.alloys.filter(alloy => alloy.image_url && alloy.image_url.trim() !== "");
-
-        console.log("Fetched alloys count:", alloysData.alloys.length, "Filtered (with images):", alloysWithImages.length);
+        // Fetch colors for this car/model
+        const colorsData = await carService.getColorsForCar(carData.id);
 
         if (!isMounted) return;
 
-        if (alloysWithImages.length === 0) {
-          const msg = "No alloys available for this car.";
-          setError(msg);
-          toast({
-            variant: "destructive",
-            title: "No Alloys Found",
-            description: "We couldn't find any alloys matching this car.",
+        let alloysWithImages = allAlloys;
+        if (!isSameModel) {
+          const alloysData = await alloyService.getAlloys({
+            carId: carData.id,
+            isActive: true,
+            limit: 1000,
           });
-          // Even though we found the car, without alloys the page is invalid per requirements
-          return;
+
+          // Filter alloys that have an image_url
+          alloysWithImages = alloysData.alloys.filter(alloy => alloy.image_url && alloy.image_url.trim() !== "");
+
+          console.log("Fetched alloys count:", alloysData.alloys.length, "Filtered (with images):", alloysWithImages.length);
+
+          if (alloysWithImages.length === 0) {
+            throw new Error("No alloys available for this car.");
+          }
+          
+          resetSelections();
         }
 
-        // Only set data if everything is valid
+        // Set state all at once
+        prevModelIdRef.current = carData.modelId;
         setCurrentCarId(carData.id);
         setCar(carData);
+        setColors(colorsData);
         setAllAlloys(alloysWithImages);
 
       } catch (err: unknown) {
@@ -129,9 +114,7 @@ export const useCarData = (id: string | undefined) => {
 
         if (carsData.cars.length > 0) {
           const newCar = carsData.cars[0];
-          setCar(newCar);
-          setCurrentCarId(newCar.id);
-          // Note: We intentionally do NOT reset allAlloys here as they are model-specific
+          navigate(`/cars/${newCar.id}`);
         }
       } catch (err) {
         console.error("Failed to fetch car by color:", err);
@@ -142,8 +125,8 @@ export const useCarData = (id: string | undefined) => {
         });
       }
     },
-    [car?.modelId, setCurrentCarId, toast],
+    [car?.modelId, navigate, toast],
   );
 
-  return { car, allAlloys, loading, error, fetchCarByColor };
+  return { car, allAlloys, colors, loading, error, fetchCarByColor };
 };
