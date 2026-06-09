@@ -35,4 +35,15 @@ window.addEventListener("error", (event) => {
   }
 });
 
+window.addEventListener("unhandledrejection", (event) => {
+  const reason = String(event.reason || "");
+  if (
+    reason.includes("Failed to fetch dynamically imported module") ||
+    reason.includes("error loading dynamically imported module")
+  ) {
+    console.warn("Unhandled dynamic import rejection detected, reloading...", event.reason);
+    handleReload();
+  }
+});
+
 createRoot(document.getElementById("root")!).render(<App />);

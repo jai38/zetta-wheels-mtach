@@ -7,10 +7,29 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { Loader } from "lucide-react";
 
-const Index = lazy(() => import("./pages/Index"));
-const Index2 = lazy(() => import("./pages/Index2"));
-const CarDetail = lazy(() => import("./pages/CarDetail"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+const lazyWithRetry = (importFunc: () => Promise<{ default: React.ComponentType<any> }>) =>
+  lazy(async () => {
+    try {
+      return await importFunc();
+    } catch (error) {
+      console.error("Dynamic import failed, reloading page...", error);
+      const reloadKey = "zetta_chunk_reload_attempts";
+      const lastReload = sessionStorage.getItem(reloadKey);
+      const now = Date.now();
+      
+      // Prevent infinite reload loops (if offline, etc.)
+      if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+        sessionStorage.setItem(reloadKey, now.toString());
+        window.location.reload();
+      }
+      throw error;
+    }
+  });
+
+const Index = lazyWithRetry(() => import("./pages/Index"));
+const Index2 = lazyWithRetry(() => import("./pages/Index2"));
+const CarDetail = lazyWithRetry(() => import("./pages/CarDetail"));
+const NotFound = lazyWithRetry(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
